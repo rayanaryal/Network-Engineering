@@ -1088,3 +1088,30 @@ This initial design helped me visualise how the Layer 2 switching, Layer 3 routi
 I also learned the importance of using verification commands to confirm the actual operational state of the network instead of assuming that a configuration command was successful.
 
 > **My main takeaway:** Understand the packet path, configure each layer deliberately, and verify every stage.
+
+
+
+### Packet Tracer Implementation
+
+After completing the initial whiteboard design, I implemented the network topology in **Cisco Packet Tracer**.
+
+![Cisco Packet Tracer VLAN topology](images/vlan-packet-tracer-topology.png)
+
+The Packet Tracer implementation allowed me to move from conceptual network design to practical configuration and testing.
+
+During the implementation, I configured and tested technologies including:
+
+- VLAN segmentation
+- Access and trunk ports
+- Inter-VLAN routing
+- DHCP and excluded address ranges
+- Layer 2 redundancy
+- RSTP and PortFast
+- Gateway redundancy using HSRP
+- OSPF dynamic routing
+- Default routing toward the ISP
+- End-to-end connectivity
+
+This lab also gave me experience troubleshooting the network layer by layer rather than treating the topology as a single configuration.
+
+
