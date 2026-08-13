@@ -78,6 +78,14 @@ dir flash:
 ```
 ---
 
+## My Memory Architecture Notes
+
+While studying Cisco device memory architecture, I mapped the relationship between **RAM, NVRAM, Flash memory, ROM, and the Cisco IOS boot process** on a whiteboard.
+
+![Cisco RAM NVRAM Flash whiteboard](images/RAM%3ANVRAM%3AFLASH%20whiteboard.png)
+
+
+
 ## Memory Comparison
 
 | Memory Type | Volatile? | Primary Purpose | Example |
