@@ -1074,6 +1074,17 @@ Destination Network
 
 When troubleshooting, I learned to verify each stage individually rather than changing multiple configurations at once.
 
+
+## Network Design and Planning
+
+Before implementing the network in Cisco Packet Tracer, I planned the topology and major network technologies on a whiteboard.
+
+The design included VLAN segmentation, inter-VLAN routing, trunking, HSRP, OSPF, DHCP, RSTP, PortFast, gateway redundancy, and upstream ISP connectivity.
+
+![Hand-drawn VLAN network design](images/vlan-network-design-whiteboard.jpg)
+
+This initial design helped me visualise how the Layer 2 switching, Layer 3 routing, redundancy, and dynamic routing components would work together before implementing the topology.
+
 I also learned the importance of using verification commands to confirm the actual operational state of the network instead of assuming that a configuration command was successful.
 
 > **My main takeaway:** Understand the packet path, configure each layer deliberately, and verify every stage.
