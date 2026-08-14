@@ -1446,16 +1446,681 @@ Blocked/discarding interfaces
 > **Key takeaway:** PortFast improves edge-port availability, while STP/RSTP continues protecting the Layer 2 topology. When a genuine topology change occurs, spanning tree recalculates the forwarding topology so redundancy can be used without creating loops.
 
 
+---
+
+# Hands-On STP Lab
+
+After learning the STP concepts, I implemented a redundant Layer 2 topology in Cisco Packet Tracer and used STP to observe how the network prevented switching loops.
+
+## Lab Topology
+
+![STP Lab Topology](images/STP-lab-topology-whiteboard.png)
+
+The topology was designed with multiple redundant switch-to-switch links so that STP would have to make forwarding and blocking decisions.
+
+During the lab, I:
+
+- Identified the Root Bridge
+- Verified Root Ports
+- Verified Designated Ports
+- Observed an Alternate/Blocked port
+- Changed the Root Bridge by modifying STP priority
+- Configured primary and secondary Root Bridges
+- Manipulated path selection using STP cost
+- Created VLAN 2 and VLAN 3
+- Configured trunks between switches
+- Assigned access ports to VLANs
+- Verified STP independently for multiple VLANs
+- Converted the topology from traditional STP to RSTP
+- Configured PortFast on edge ports
+
+
+---
+
+## Verifying STP Port Roles
+
+I used the following command to inspect the spanning-tree topology:
+
+```cisco
+show spanning-tree
+```
+
+One of my switches produced the following output for VLAN 1:
+
+```text
+VLAN0001
+Spanning tree enabled protocol ieee
+
+Root ID    Priority    20481
+           Address     0000.0CC8.C224
+           Cost        38
+           Port        4 (FastEthernet0/4)
+
+Bridge ID  Priority    24577
+           Address     0060.47A3.6586
+
+Interface        Role  Sts  Cost
+---------------- ----  ---  ----
+Fa0/1            Altn  BLK  40
+Fa0/2            Desg  FWD  19
+Fa0/3            Desg  FWD  19
+Fa0/4            Root  FWD  19
+```
+
+This output allowed me to observe STP making actual forwarding decisions in my topology.
+
+### Fa0/4 - Root Port
+
+```text
+Fa0/4  Root  FWD  19
+```
+
+`Fa0/4` is the Root Port and provides the preferred path toward the Root Bridge.
+
+### Fa0/2 and Fa0/3 - Designated Ports
+
+```text
+Fa0/2  Desg  FWD  19
+Fa0/3  Desg  FWD  19
+```
+
+These interfaces are Designated Ports and are forwarding traffic.
+
+### Fa0/1 - Alternate / Blocked
+
+```text
+Fa0/1  Altn  BLK  40
+```
+
+This was particularly useful to observe because the physical link was still connected, but STP prevented it from forwarding normal traffic.
+
+The interface had an STP cost of `40`, while another lower-cost path was selected.
+
+Conceptually:
+
+```text
+Physical Redundancy
+        +
+Multiple Layer 2 Paths
+        ↓
+STP Path Selection
+        ↓
+Preferred Path → Forwarding
+Redundant Path → Blocked
+        ↓
+Loop-Free Topology
+```
+
+> **Lab observation:** Seeing `Root FWD`, `Desg FWD`, and `Altn BLK` in Cisco IOS helped me connect STP theory with the actual behaviour of my Packet Tracer topology.
+
+
+
+---
+
+## Changing the Root Bridge
+
+During the lab, I wanted to control which switch became the Root Bridge rather than relying entirely on the default STP election.
+
+STP prefers the switch with the lowest Bridge ID. Therefore, I can influence the election by changing the bridge priority.
+
+### Changing the Priority
+
+I configured a lower priority on the switch that I wanted to become the Root Bridge:
+
+```cisco
+spanning-tree vlan 1 priority 24576
+```
+
+I then verified the result using:
+
+```cisco
+show spanning-tree
+```
+
+This demonstrated an important principle:
+
+```text
+Lower Bridge Priority
+        ↓
+Lower Bridge ID
+        ↓
+More likely to become Root Bridge
+```
+
+---
+
+## Understanding the Extended System ID
+
+One behaviour I observed was that Cisco IOS displayed:
+
+```text
+Priority 24577
+```
+
+even though I configured:
+
+```text
+24576
+```
+
+For VLAN 1:
+
+```text
+24576 + 1 = 24577
+```
+
+The additional value comes from the VLAN ID being represented through the Extended System ID.
+
+Cisco IOS displayed this as:
+
+```text
+Bridge ID Priority 24577
+(priority 24576 sys-id-ext 1)
+```
+
+This helped me understand why the priority displayed by `show spanning-tree` may not exactly match the base priority I configured.
+
+---
+
+## Configuring Primary and Secondary Root Bridges
+
+I also practised explicitly defining preferred Root Bridges.
+
+For my primary switch:
+
+```cisco
+spanning-tree vlan 1 root primary
+```
+
+For the secondary switch:
+
+```cisco
+spanning-tree vlan 1 root secondary
+```
+
+Conceptually:
+
+```text
+             Primary Root
+                 SW1
+                /   \
+               /     \
+             SW2-----SW3
+              ^
+              |
+        Secondary Root
+```
+
+This provides a more intentional STP design than allowing the Root Bridge to be selected only because a switch happens to have the lowest MAC address.
+
+---
+
+## Per-VLAN Root Bridge Selection
+
+I then applied the same concept independently to different VLANs.
+
+For VLAN 2:
+
+```cisco
+spanning-tree vlan 2 priority 12288
+```
+
+My verification output showed:
+
+```text
+VLAN0002
+
+Root ID    Priority    12290
+           Address     0000.0CC8.C224
+           This bridge is the root
+```
+
+The displayed priority can be understood as:
+
+```text
+12288 + VLAN 2 = 12290
+```
+
+For VLAN 3, I configured:
+
+```cisco
+spanning-tree vlan 3 priority 8192
+```
+
+Verification showed:
+
+```text
+VLAN0003
+
+Root ID    Priority    8195
+           Address     0060.47A3.6586
+           This bridge is the root
+```
+
+Therefore:
+
+```text
+8192 + VLAN 3 = 8195
+```
+
+This demonstrated that different VLANs can have different Root Bridges when using per-VLAN spanning tree.
+
+---
+
+## What I Learned
+
+Instead of allowing STP to make every design decision using default values, I can deliberately influence the Layer 2 topology:
+
+```text
+Select preferred Root Bridge
+            ↓
+Configure bridge priority
+            ↓
+Configure secondary Root
+            ↓
+Select Root Bridges per VLAN
+            ↓
+Verify with show spanning-tree
+```
+
+> **Lab lesson:** Root Bridge election should be understood as a controllable network-design decision, not simply something that STP chooses automatically.
 
 
 
 
 
+---
+
+## Manipulating STP Path Cost
+
+After experimenting with Root Bridge election, I tested how changing **STP path cost** could influence which redundant path STP preferred.
+
+The fundamental rule is:
+
+```text
+Lower STP Cost = Preferred Path
+```
+
+Rather than physically removing a redundant connection, I could make one path less desirable by increasing its STP cost.
+
+---
+
+## My STP Cost Experiment
+
+During the lab, I manually increased the cost on an interface:
+
+```cisco
+interface FastEthernet0/1
+ spanning-tree vlan 1 cost 40
+```
+
+I then verified the topology using:
+
+```cisco
+show spanning-tree
+```
+
+The resulting interface information included:
+
+```text
+Interface        Role  Sts  Cost
+---------------- ----  ---  ----
+Fa0/1            Altn  BLK  40
+Fa0/2            Desg  FWD  19
+Fa0/3            Desg  FWD  19
+Fa0/4            Root  FWD  19
+```
+
+The interface I had given the higher cost appeared as:
+
+```text
+Fa0/1  Altn  BLK  40
+```
+
+while a lower-cost path was selected for forwarding.
+
+---
+
+## How the Decision Changed
+
+Conceptually:
+
+```text
+Before
+
+Path A → Cost 19
+Path B → Cost 19
+
+        ↓
+
+Increase Path A cost
+
+        ↓
+
+Path A → Cost 40
+Path B → Cost 19
+
+        ↓
+
+STP prefers Path B
+```
+
+The higher-cost link remained physically connected, but STP could logically prevent that path from being used for normal forwarding.
+
+This preserved redundancy while maintaining a loop-free topology.
+
+---
+
+## Root Priority vs Path Cost
+
+This experiment helped me distinguish two different ways of influencing STP:
+
+| Goal | STP Mechanism |
+|---|---|
+| Control which switch becomes Root Bridge | Bridge Priority |
+| Influence which path STP prefers | Path Cost |
+
+For example:
+
+```cisco
+spanning-tree vlan 1 priority 24576
+```
+
+influences:
+
+```text
+Root Bridge Election
+```
+
+Whereas:
+
+```cisco
+interface FastEthernet0/1
+ spanning-tree vlan 1 cost 40
+```
+
+influences:
+
+```text
+Path Selection
+```
+
+---
+
+## What I Learned
+
+STP path selection is not something I can only observe.
+
+I can deliberately influence it:
+
+```text
+Redundant Paths Exist
+        ↓
+Compare STP Costs
+        ↓
+Lower-Cost Path Preferred
+        ↓
+Higher-Cost Path Can Remain Redundant
+```
+
+> **Lab lesson:** By changing STP interface cost, I was able to influence which Layer 2 path STP preferred while keeping the redundant physical connection available.
 
 
+---
+
+## Migrating from STP to RSTP
+
+After configuring and testing traditional STP, I migrated the switching topology to **Rapid Spanning Tree Protocol (RSTP)**.
+
+RSTP maintains the same fundamental objective as STP—creating a loop-free Layer 2 topology—but provides faster convergence when the network topology changes.
+
+In my Cisco lab, I implemented RSTP using **Rapid PVST+**.
+
+---
+
+## Changing the Spanning-Tree Mode
+
+I configured Rapid PVST+ globally on the switches:
+
+```cisco
+enable
+configure terminal
+spanning-tree mode rapid-pvst
+end
+```
+
+The important distinction is:
+
+```text
+PVST+        → Per-VLAN traditional STP
+Rapid PVST+  → Per-VLAN RSTP
+```
+
+I applied the intended spanning-tree mode across the switches participating in the Layer 2 topology.
+
+---
+
+## Verifying the Protocol Change
+
+After changing the spanning-tree mode, I verified the result using:
+
+```cisco
+show spanning-tree
+```
+
+Before the migration, the output identified traditional STP:
+
+```text
+Spanning tree enabled protocol ieee
+```
+
+After enabling Rapid PVST+, the output changed to:
+
+```text
+Spanning tree enabled protocol rstp
+```
+
+This provided direct evidence that the configuration change had taken effect.
+
+---
+
+## RSTP Verification From My Lab
+
+One of my outputs showed:
+
+```text
+VLAN0001
+Spanning tree enabled protocol rstp
+
+Root ID    Priority    20481
+           Address     0000.0CC8.C224
+           Cost        19
+           Port        1 (FastEthernet0/1)
+
+Bridge ID  Priority    28673
+           Address     00E0.F73D.84AA
+```
+
+The interface information included:
+
+```text
+Interface        Role  Sts  Cost
+---------------- ----  ---  ----
+Fa0/1            Root  FWD  19
+Fa0/5            Desg  FWD  19
+Fa0/2            Desg  FWD  19
+Fa0/4            Desg  FWD  19
+Fa0/3            Desg  FWD  19
+```
+
+The most important verification line was:
+
+```text
+Spanning tree enabled protocol rstp
+```
+
+---
+
+## Before and After
+
+The migration gave me a clear comparison:
+
+```text
+BEFORE
+
+Spanning tree enabled protocol ieee
+                ↓
+          Traditional STP
 
 
+AFTER
 
+Spanning tree enabled protocol rstp
+                ↓
+               RSTP
+```
+
+Rather than assuming the configuration worked, I verified the operational protocol from Cisco IOS.
+
+---
+
+## What I Learned
+
+My workflow was:
+
+```text
+Build redundant Layer 2 topology
+              ↓
+Observe traditional STP
+              ↓
+Configure Rapid PVST+
+              ↓
+Run show spanning-tree
+              ↓
+Verify protocol = rstp
+```
+
+This reinforced an important troubleshooting principle:
+
+> **Configuration does not prove operational state. Verification does.**
+
+> **Lab lesson:** I migrated my switching topology from traditional STP to Rapid PVST+ and confirmed the change through Cisco IOS output showing `Spanning tree enabled protocol rstp`.
+
+
+---
+
+## Implementing PortFast
+
+After migrating the topology to Rapid PVST+, I configured **PortFast** for appropriate edge ports.
+
+In my lab, I used:
+
+```cisco
+enable
+configure terminal
+spanning-tree portfast default
+end
+write
+```
+
+This enables PortFast by default on eligible non-trunk ports.
+
+---
+
+## Why PortFast Was Appropriate
+
+The switch-to-switch links in my topology formed part of the redundant Layer 2 infrastructure.
+
+These links needed normal STP/RSTP operation:
+
+```text
+SW1 -------- SW2
+      TRUNK
+```
+
+However, ports connected to end devices have a different purpose:
+
+```text
+SW1 -------- PC1
+      ACCESS
+```
+
+For appropriate edge ports, PortFast allows the interface to transition rapidly to forwarding instead of waiting through the traditional STP convergence process.
+
+An important distinction is:
+
+```text
+Switch → Switch
+     ↓
+STP/RSTP infrastructure link
+
+Switch → End Device
+     ↓
+Potential PortFast edge port
+```
+
+---
+
+## PortFast Does Not Mean STP Is Disabled
+
+One of the important lessons from this configuration is:
+
+```text
+PortFast ≠ Disable STP
+```
+
+PortFast changes the transition behaviour of an edge port; it does not mean spanning-tree protection has simply been removed from the switch.
+
+This distinction is important when designing a stable Layer 2 network.
+
+---
+
+# Final Lab Reflection
+
+This lab brought together several STP concepts that initially appeared separate.
+
+I progressed through:
+
+```text
+Build a redundant topology
+          ↓
+Identify the Root Bridge
+          ↓
+Identify Root and Designated Ports
+          ↓
+Observe an Alternate/Blocked Port
+          ↓
+Manipulate Bridge Priority
+          ↓
+Configure Primary and Secondary Roots
+          ↓
+Manipulate STP Path Cost
+          ↓
+Create VLAN-specific STP behaviour
+          ↓
+Migrate from STP to Rapid PVST+
+          ↓
+Configure PortFast
+          ↓
+Verify the operational topology
+```
+
+The biggest lesson was that STP is not simply a protocol that "blocks redundant ports."
+
+It is a Layer 2 control mechanism that allows physical redundancy to exist while constructing a logical loop-free forwarding topology.
+
+I also learned that STP behaviour can be deliberately influenced through:
+
+- Bridge priority
+- Primary and secondary Root Bridge configuration
+- Per-VLAN Root Bridge selection
+- Interface path cost
+- Rapid PVST+ configuration
+- PortFast on appropriate edge ports
+
+Most importantly, I learned to verify the resulting network state using Cisco IOS commands rather than assuming that a configuration command produced the intended result.
+
+> **Final takeaway:** Build, configure, verify, observe, and then explain why the network behaves the way it does.
 
 
 
