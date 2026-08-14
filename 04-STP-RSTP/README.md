@@ -53,6 +53,150 @@ For example:
 
 ---
 
+## Layer 3 Loops vs Layer 2 Loops
+
+Before studying Layer 2 switching loops, I compared them with loops that can occur in a routed Layer 3 environment.
+
+The important distinction is that Layer 3 packets contain a **TTL (Time To Live)** value.
+
+Each router that forwards an IP packet decreases its TTL.
+
+Conceptually:
+
+```text
+TTL = 64
+   ↓ Router
+TTL = 63
+   ↓ Router
+TTL = 62
+   ↓
+...
+TTL = 0
+   ↓
+Packet discarded
+```
+
+Therefore, even if a routing problem causes a packet to circulate repeatedly, the packet cannot continue indefinitely because its TTL eventually reaches zero.
+
+---
+
+## Observing TTL with Traceroute
+
+I explored this behaviour using:
+
+```bash
+traceroute google.com
+```
+
+and:
+
+```bash
+traceroute 8.8.8.8
+```
+
+The traceroute output showed traffic progressing hop-by-hop through multiple Layer 3 devices toward its destination.
+
+This helped me connect TTL with a practical troubleshooting tool:
+
+```text
+IP Packet
+    ↓
+Router 1
+    ↓
+Router 2
+    ↓
+Router 3
+    ↓
+Destination
+```
+
+`traceroute` can reveal the Layer 3 path taken toward a destination and help identify where connectivity problems may be occurring.
+
+---
+
+## Why Layer 2 Loops Are Different
+
+A Layer 2 Ethernet frame does not use the IP TTL mechanism to limit how many switches it can traverse.
+
+In a redundant switched topology:
+
+```text
+        SW1
+       /   \
+      /     \
+    SW2-----SW3
+```
+
+a broadcast frame can be forwarded through multiple paths and repeatedly circulate through the Layer 2 topology.
+
+This can lead to:
+
+```text
+Layer 2 Loop
+      ↓
+Repeated Broadcast Frames
+      ↓
+Broadcast Storm
+      ↓
+Excessive Link and Switch Resource Usage
+      ↓
+Network Disruption
+```
+
+This is why redundant Layer 2 connectivity requires a loop-prevention mechanism such as STP.
+
+---
+
+## Static vs Dynamic Loop Prevention
+
+I identified two general ways of removing a Layer 2 loop.
+
+### Static Intervention
+
+An administrator could physically disconnect a redundant cable or administratively shut down an interface.
+
+```text
+Redundant Link
+      ↓
+Disconnect / Shutdown
+      ↓
+Loop Removed
+```
+
+However, this also removes the benefit of automatically available redundancy.
+
+### Dynamic Prevention with STP
+
+STP provides a dynamic solution:
+
+```text
+Physical Redundant Paths
+          ↓
+STP Calculates Logical Topology
+          ↓
+Selected Paths Forward
+          ↓
+Redundant Path Logically Blocked
+          ↓
+Loop-Free Layer 2 Network
+```
+
+If the active path later fails, STP can recalculate the topology and allow an appropriate redundant path to transition into forwarding.
+
+---
+
+## Key Difference
+
+| Layer 3 | Layer 2 |
+|---|---|
+| IP packets contain TTL | Ethernet switching does not rely on IP TTL |
+| TTL decreases at each routed hop | Frames can circulate through a switching loop |
+| TTL eventually reaches zero | Broadcast traffic can continue to be regenerated |
+| Routing protocols handle Layer 3 topology | STP protects redundant Layer 2 topology |
+
+> **Key takeaway:** TTL provides a lifetime limit for IP packets at Layer 3, while STP is required at Layer 2 to construct a loop-free logical topology when redundant switching paths exist.
+---
+
 ## Root Bridge Election
 
 STP first needs to elect one switch as the **Root Bridge**.
