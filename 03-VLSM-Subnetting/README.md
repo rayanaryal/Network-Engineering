@@ -957,11 +957,23 @@ Starting network:
 The subnets were allocated from the largest host requirement to
 the smallest.
 
-![My VLSM addressing calculations](images/vlsm-addressing-plan.png)
+![My VLSM addressing calculations](images/vlsm-addressing-calculations.png)
 
 
+### Reflection
 
+This addressing table was created during my original VLSM planning process. Some intermediate calculations were later corrected as I verified the subnet boundaries and usable address ranges.
 
+The exercise reinforced the importance of checking:
+
+- Network addresses
+- Broadcast addresses
+- First and last usable addresses
+- Subnet block sizes
+- Overlapping address ranges
+- Correct CIDR prefixes
+
+Rather than relying only on memorised subnetting tables, I learned to verify each allocation mathematically before configuring it on Cisco devices.
 
 
 
