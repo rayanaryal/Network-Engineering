@@ -569,7 +569,22 @@ Static EtherChannel
 ```
 
 This makes correct configuration on both ends especially important.
+Another important limitation of static EtherChannel is that the bundle does not use a negotiation protocol to detect configuration mismatches.
 
+In the material I studied, a static EtherChannel supports up to **8 aggregated physical links**.
+
+Because `mode on` performs no negotiation, both ends must be configured correctly and compatibly. A mismatch between the two sides can prevent the EtherChannel from operating as intended and may result in packet loss.
+
+```text
+Static EtherChannel
+        ↓
+Maximum 8 Member Links
+        ↓
+mode on
+        ↓
+No LACP / PAgP Negotiation
+        ↓
+Compatible Configuration Required
 Later in the lab, I moved from static EtherChannel to **dynamic EtherChannel using LACP and PAgP**, where negotiation modes determine whether the channel can form.
 
 > **Lab lesson:** By bundling `Fa0/1-4` into `Port-Channel1`, I changed four independent physical Layer 2 links into one logical EtherChannel. This allowed me to see directly how EtherChannel and STP work together rather than treating them as unrelated technologies.
@@ -825,6 +840,147 @@ EtherChannel
 
 
 ---
+
+---
+
+# Hands-On LACP EtherChannel Lab
+
+After studying LACP negotiation modes, I also worked with **LACP (Link Aggregation Control Protocol)** in my EtherChannel topology.
+
+Unlike static `mode on`, LACP uses a negotiation protocol to dynamically establish the EtherChannel.
+
+In this part of the lab, I worked with:
+
+```text
+Protocol      = LACP
+Channel Group = 2
+Modes         = Active / Passive
+```
+
+---
+
+## Configuring LACP
+
+My lab topology used the following interface range:
+
+```cisco
+interface range fa0/5-7
+ switchport mode trunk
+ switchport nonegotiate
+ no shutdown
+ channel-protocol lacp
+ channel-group 2 mode active
+ no shutdown
+```
+
+The important commands are:
+
+```cisco
+channel-protocol lacp
+channel-group 2 mode active
+```
+
+The first command selects **LACP** as the EtherChannel negotiation protocol.
+
+The second command places the interfaces into **Channel Group 2** using LACP active mode.
+
+---
+
+## Active and Passive Negotiation
+
+LACP supports two negotiation modes:
+
+```text
+Active
+Passive
+```
+
+An `active` interface actively attempts to establish the LACP EtherChannel.
+
+A `passive` interface waits for LACP negotiation from the neighbouring device.
+
+Therefore:
+
+```text
+Active  + Active   = Forms
+Active  + Passive  = Forms
+Passive + Active   = Forms
+Passive + Passive  = Does Not Form
+```
+
+A useful rule is:
+
+```text
+At least one side must be Active.
+```
+
+Conceptually:
+
+```text
+SW1                              SW2
+
+Active  <------ LACP ------>  Passive
+  |                              |
+Fa0/5                           Fa0/5
+Fa0/6                           Fa0/6
+Fa0/7                           Fa0/7
+  \                              /
+   \                            /
+        Channel Group 2
+              ↓
+         Port-Channel
+```
+
+---
+
+## Verifying the LACP EtherChannel
+
+After configuring the bundle, I can verify the resulting EtherChannel using:
+
+```cisco
+show etherchannel summary
+```
+
+I can also verify trunking with:
+
+```cisco
+show interfaces trunk
+```
+
+and inspect an individual physical interface with:
+
+```cisco
+show interfaces fa0/1
+```
+
+These checks help confirm that the logical EtherChannel and its physical member interfaces are operating as expected.
+
+---
+
+## LACP vs Static EtherChannel
+
+This experiment helped me distinguish LACP from the static EtherChannel configuration I used earlier.
+
+```text
+Static EtherChannel
+
+channel-group 1 mode on
+        ↓
+No negotiation
+```
+
+compared with:
+
+```text
+LACP EtherChannel
+
+channel-protocol lacp
+channel-group 2 mode active/passive
+        ↓
+LACP negotiation
+```
+
+> **Lab lesson:** LACP dynamically negotiates an EtherChannel using `active` and `passive` modes, whereas static `mode on` forms the bundle without using a negotiation protocol.
 
 # Hands-On PAgP EtherChannel Lab
 
