@@ -64,7 +64,11 @@ This allows the design to gain benefits such as:
 
 > **Key idea:** EtherChannel does not remove STP. Instead, STP sees the bundled EtherChannel as a single logical interface while EtherChannel manages the member physical links.
 
+### Before EtherChannel: STP Blocking a Redundant Link
 
+![STP blocking redundant link before EtherChannel](images/STP-before-EtherChannel.png)
+
+This topology shows the problem before EtherChannel was configured. Multiple physical links existed between the switches, but STP blocked a redundant path to prevent a Layer 2 loop.
 
 ---
 
@@ -383,6 +387,15 @@ Fa0/3
 Fa0/4
 ```
 
+### Static EtherChannel Topology
+
+![Four-link Static EtherChannel lab](images/Static-EtherChannel-lab.png)
+
+This Packet Tracer topology shows the four physical FastEthernet links used in my static EtherChannel experiment.
+
+The interfaces were bundled into a single logical Port-Channel using Channel Group 1.
+
+
 Instead of configuring each interface individually, I used an interface range:
 
 ```cisco
@@ -583,8 +596,13 @@ Dynamic EtherChannel
              +-- Desirable
              +-- Auto
 ```
+### Expanded EtherChannel Topology
 
----
+![Three-switch EtherChannel topology](images/EtherChannel-three-switch-topology.png)
+
+I expanded the original two-switch EtherChannel topology by adding another switch and additional bundled links.
+
+This allowed me to move beyond a single Port-Channel and explore how EtherChannel can be used across a larger switched topology.---
 
 ## LACP
 
@@ -823,6 +841,13 @@ Modes         = Desirable / Auto
 ```
 
 ---
+### PAgP Lab Topology
+
+![PAgP EtherChannel lab](images/PAgP-EtherChannel-lab.png)
+
+This Packet Tracer topology shows my dynamic PAgP EtherChannel experiment using **Channel Group 3**.
+
+The lab allowed me to test how `desirable` and `auto` modes negotiate the formation of a logical Port-Channel instead of forcing the bundle with static `mode on`.
 
 ## Configuring the Desirable Side
 
@@ -1243,7 +1268,75 @@ Traffic Distributed Across Member Links
 > **Key takeaway:** EtherChannel provides aggregate capacity by bundling physical links, while a load-balancing algorithm determines how traffic flows are mapped across those member links.
 
 
+---
 
+# Verification and Final Reflection
+
+EtherChannel configuration should always be verified after the member interfaces and Port-Channel are configured.
+
+The most useful verification commands from my lab were:
+
+```cisco
+show etherchannel summary
+show interfaces trunk
+show interfaces fa0/1
+```
+
+These commands helped me check:
+
+```text
+Whether the EtherChannel formed
+Which interfaces are members
+Whether the logical Port-Channel is operational
+Whether trunking is working
+Whether the physical member interfaces are behaving as expected
+```
+
+---
+
+## What I Learned
+
+This lab connected several Layer 2 technologies that initially seemed separate.
+
+```text
+Multiple Physical Links
+        ↓
+STP Detects Redundancy
+        ↓
+EtherChannel Bundles Links
+        ↓
+Logical Port-Channel Created
+        ↓
+Static or Dynamic Negotiation
+        ↓
+LACP / PAgP Modes
+        ↓
+Load Balancing Across Member Links
+        ↓
+Verification
+```
+
+I learned to distinguish:
+
+```text
+Physical Interface
+Channel Group
+Port-Channel
+```
+
+and also:
+
+```text
+Static EtherChannel → mode on
+
+LACP → active / passive
+
+PAgP → desirable / auto
+```
+
+The biggest practical lesson was that several physical Ethernet links can operate together as one logical connection, but the physical interfaces still need compatible settings and the resulting bundle must be verified rather than assumed to be working.
+
+> **Final takeaway:** EtherChannel provides bandwidth aggregation and redundancy by combining compatible physical links into one logical Port-Channel, while protocols such as LACP and PAgP determine how dynamic bundles are negotiated.
 
 
 
