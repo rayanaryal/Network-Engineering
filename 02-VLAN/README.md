@@ -2,7 +2,7 @@
 
 This section documents my understanding and hands-on implementation of **Virtual Local Area Networks (VLANs)** using Cisco switches.
 
-VLANs allow a physical switched network to be logically divided into multiple separate Layer 2 networks. I used VLANs in my lab to separate different departments while allowing them to share the same physical switching infrastructure.
+VLANs allow a physical switched network to be logically divided into multiple separate **Layer 2 broadcast domains**. I used VLANs in my lab to separate different departments while allowing them to share the same physical switching infrastructure.
 
 ---
 
@@ -11,26 +11,36 @@ VLANs allow a physical switched network to be logically divided into multiple se
 - What is a VLAN?
 - Why VLANs are used
 - Broadcast domains
+- VLAN IDs
 - Access ports
 - VLAN creation and naming
 - Assigning switch ports to VLANs
 - VLAN verification
-- 802.1Q trunking
+- Access-port traffic
+- IEEE 802.1Q trunking
 - Native VLAN
 - Allowed VLANs on trunks
+- Access ports vs trunk ports
 - Inter-VLAN communication
+- Router-on-a-Stick
+- Default gateways
 - VLAN troubleshooting
-- Hands-on Cisco Packet Tracer lab
+- VLSM addressing
+- Cisco Packet Tracer implementation
+- Network design and planning
+- Hands-on VLAN lab
+- Verification commands
+- Layer 2 and Layer 3 troubleshooting
 
 ---
 
-## What is a VLAN?
+# 1. What Is a VLAN?
 
 A **VLAN (Virtual Local Area Network)** is a logical separation of devices within a switched network.
 
 Without VLANs, devices connected to the same Layer 2 network normally belong to the same **broadcast domain**.
 
-VLANs allow us to divide that physical network into multiple logical broadcast domains.
+VLANs allow us to divide a physical switched network into multiple logical broadcast domains.
 
 For example:
 
@@ -46,13 +56,16 @@ HR PC ────────┤ VLAN 30      │
 Engineer PC ──┤ VLAN 40      │
               └──────────────┘
 ```
+
+The physical switch remains the same, but the devices are logically separated into different VLANs.
+
 ---
 
-## Why Do We Use VLANs?
+# 2. Why Do We Use VLANs?
 
-VLANs allow network administrators to logically segment a switched network without requiring a completely separate physical switch for every group of devices.
+VLANs provide several important benefits in network design.
 
-### 1. Reduce Broadcast Traffic
+## 2.1 Reduce Broadcast Traffic
 
 Each VLAN creates its own **broadcast domain**.
 
@@ -70,9 +83,12 @@ VLAN 20 Broadcast
 | VLAN 40  ---> NO  |
 +-------------------+
 ```
-This limits unnecessary broadcast traffic.
 
-### 2. Logical Network Segmentation
+This helps limit unnecessary broadcast traffic.
+
+---
+
+## 2.2 Logical Network Segmentation
 
 Devices can be grouped according to their department or function rather than simply by their physical location.
 
@@ -84,29 +100,40 @@ For example:
 | VLAN 30 | HR |
 | VLAN 40 | Engineering |
 
-This means Sales, HR, and Engineering can use the same physical switching infrastructure while remaining logically separated at Layer 2.
+Sales, HR, and Engineering can therefore use the same physical switching infrastructure while remaining logically separated at Layer 2.
 
-### 3. Security
+---
+
+## 2.3 Security and Segmentation
 
 VLANs provide network segmentation.
 
-For example, a device in:
+For example:
 
 ```text
 VLAN 20 - SALES
 ```
 
-cannot directly communicate at Layer 2 with a device in:
+and:
 
 ```text
 VLAN 30 - HR
 ```
 
-Communication between different VLANs requires a **Layer 3 device**, such as a router or multilayer switch.
+are separate Layer 2 broadcast domains.
+
+A device in VLAN 20 cannot directly communicate at Layer 2 with a device in VLAN 30.
+
+Communication between different VLANs requires a **Layer 3 device**, such as:
+
+- Router
+- Layer 3 switch
 
 > **Important:** VLANs provide segmentation, but VLANs alone should not be considered a complete security control. Layer 3 controls such as ACLs or firewall policies can be used to control traffic between VLANs.
 
-### 4. Easier Network Management
+---
+
+## 2.4 Easier Network Management
 
 VLANs make it easier to organise users and devices according to their purpose.
 
@@ -122,17 +149,30 @@ A network administrator can identify the purpose of each logical network without
 
 ---
 
-## VLAN IDs
+# 3. VLAN IDs
 
 A VLAN is identified using a numerical **VLAN ID**.
 
-The normal VLAN ID range is:
+For IEEE 802.1Q VLAN tagging, the VLAN identifier field is **12 bits**, providing VLAN ID values from:
+
+```text
+0 - 4095
+```
+
+However:
+
+```text
+VLAN 0    = Reserved
+VLAN 1    = Common default VLAN on Cisco switches
+VLAN 2-4094 = VLAN IDs available for normal VLAN identification
+VLAN 4095 = Reserved
+```
+
+Therefore, the commonly used VLAN ID range for normal VLAN identification is:
 
 ```text
 1 - 4094
 ```
-
-For IEEE 802.1Q VLAN tagging, VLAN IDs are represented using a 12-bit VLAN identifier field. VLAN IDs **0 and 4095 are reserved**, leaving VLAN IDs **1–4094** available for VLAN identification.
 
 In my lab, I used:
 
@@ -142,13 +182,13 @@ VLAN 30  → HR
 VLAN 40  → ENGINEERING
 ```
 
-The VLAN name is primarily used to make the configuration easier for administrators to understand. The switch identifies the VLAN by its **VLAN ID**.
+The VLAN name is primarily used to make the configuration easier for administrators to understand.
 
-
+The switch identifies the VLAN primarily by its **VLAN ID**.
 
 ---
 
-## Creating VLANs on a Cisco Switch
+# 4. Creating VLANs on a Cisco Switch
 
 VLANs are created from **global configuration mode** on a Cisco switch.
 
@@ -160,14 +200,14 @@ In my lab, I created three VLANs:
 | 30 | HR | Human Resources |
 | 40 | ENGINEERING | Engineering |
 
-### Enter Global Configuration Mode
+## Enter Global Configuration Mode
 
 ```cisco
 enable
 configure terminal
 ```
 
-### Create VLAN 20 - SALES
+## Create VLAN 20 - SALES
 
 ```cisco
 vlan 20
@@ -175,7 +215,7 @@ name SALES
 exit
 ```
 
-### Create VLAN 30 - HR
+## Create VLAN 30 - HR
 
 ```cisco
 vlan 30
@@ -183,7 +223,7 @@ name HR
 exit
 ```
 
-### Create VLAN 40 - ENGINEERING
+## Create VLAN 40 - ENGINEERING
 
 ```cisco
 vlan 40
@@ -191,11 +231,11 @@ name ENGINEERING
 exit
 ```
 
-The VLAN ID creates the logical VLAN, while the `name` command assigns a descriptive name to make the configuration easier to understand.
+The VLAN ID creates the logical VLAN, while the `name` command assigns a descriptive name.
 
 ---
 
-## Verifying VLAN Configuration
+# 5. Verifying VLAN Configuration
 
 After creating the VLANs, I can verify them using:
 
@@ -218,16 +258,27 @@ At this stage, the VLANs exist on the switch, but end devices still need to be a
 
 > **Key takeaway:** Creating a VLAN and assigning a switch port to that VLAN are two separate configuration steps.
 
+---
+
+# 6. Access Ports
+
+An **access port** carries traffic for a single VLAN and is commonly used to connect end devices such as:
+
+- PCs
+- Printers
+- Servers
+- IP phones
+- Other endpoint devices
+
+Creating a VLAN does not automatically place switch interfaces into that VLAN.
+
+The required interfaces must be explicitly assigned.
 
 ---
 
-## Configuring Access Ports
+# 7. Configuring an Access Port
 
-An **access port** carries traffic for a single VLAN and is commonly used to connect end devices such as PCs, printers, and servers to a switch.
-
-Creating a VLAN does not automatically place switch interfaces into that VLAN. The required interfaces must be explicitly assigned.
-
-### Example - Assign a Port to VLAN 20
+Example:
 
 ```cisco
 interface GigabitEthernet1/0/1
@@ -236,13 +287,17 @@ switchport access vlan 20
 no shutdown
 ```
 
-### What Do These Commands Mean?
+## What Do These Commands Mean?
+
+### `switchport mode access`
 
 ```cisco
 switchport mode access
 ```
 
-This forces the interface to operate as a **Layer 2 access port** rather than dynamically attempting to form a trunk.
+This configures the interface as a static **Layer 2 access port**.
+
+### `switchport access vlan 20`
 
 ```cisco
 switchport access vlan 20
@@ -254,7 +309,7 @@ Therefore, traffic entering this interface from the connected end device belongs
 
 ---
 
-## Configuring Multiple Access Ports
+# 8. Configuring Multiple Access Ports
 
 If several consecutive interfaces belong to the same VLAN, an interface range can be used.
 
@@ -269,7 +324,7 @@ no shutdown
 
 This assigns all four interfaces to VLAN 20.
 
-The same concept can be applied to the other departments:
+For HR:
 
 ```cisco
 interface range GigabitEthernet1/0/5-8
@@ -277,6 +332,8 @@ switchport mode access
 switchport access vlan 30
 no shutdown
 ```
+
+For Engineering:
 
 ```cisco
 interface range GigabitEthernet1/0/9-12
@@ -289,7 +346,7 @@ no shutdown
 
 ---
 
-## Verifying Access Port VLAN Membership
+# 9. Verifying Access Port VLAN Membership
 
 The first command I use is:
 
@@ -314,7 +371,7 @@ For detailed information about a specific switchport:
 show interfaces GigabitEthernet1/0/1 switchport
 ```
 
-This can be used to verify information such as:
+This can be used to verify:
 
 - Administrative mode
 - Operational mode
@@ -323,7 +380,7 @@ This can be used to verify information such as:
 
 ---
 
-## Access Port Traffic
+# 10. Access Port Traffic
 
 An end device connected to an access port normally sends and receives ordinary **untagged Ethernet frames**.
 
@@ -351,9 +408,11 @@ The end device therefore does not normally need to understand 802.1Q VLAN taggin
 
 ---
 
-## VLAN Trunking
+# 11. VLAN Trunking
 
-An **access port** normally carries traffic for one VLAN. However, network devices such as switches often need to transport traffic belonging to **multiple VLANs across the same physical link**.
+An **access port** normally carries traffic for one VLAN.
+
+However, network devices such as switches often need to transport traffic belonging to **multiple VLANs across the same physical link**.
 
 This is accomplished using a **trunk link**.
 
@@ -382,19 +441,23 @@ Without trunking, separate physical links would be required to carry each VLAN b
 
 ---
 
-## IEEE 802.1Q
+# 12. IEEE 802.1Q
 
 Cisco switches commonly use **IEEE 802.1Q (dot1q)** to identify VLAN traffic travelling across trunk links.
 
-802.1Q inserts VLAN information into an Ethernet frame so that the receiving switch can determine which VLAN the frame belongs to.
+802.1Q adds VLAN information to an Ethernet frame so that the receiving switch can determine which VLAN the frame belongs to.
 
 Conceptually:
 
 ```text
 Access Link:
-[ Ethernet Frame ]
 
-802.1Q Trunk:
+[ Ethernet Frame ]
+```
+
+On an 802.1Q trunk:
+
+```text
 [ Ethernet ][ 802.1Q Tag ][ Frame Information ]
                     |
                     +---- VLAN ID
@@ -406,7 +469,7 @@ The receiving switch reads the VLAN information and places the frame into the co
 
 ---
 
-## Configuring a Trunk Port
+# 13. Configuring a Trunk Port
 
 Example trunk configuration:
 
@@ -426,7 +489,7 @@ configures the interface to operate as a static Layer 2 trunk.
 
 ---
 
-## Allowing Specific VLANs on a Trunk
+# 14. Allowing Specific VLANs on a Trunk
 
 A trunk can be configured to carry only selected VLANs.
 
@@ -438,7 +501,7 @@ switchport mode trunk
 switchport trunk allowed vlan 20,30,40
 ```
 
-This allows VLANs 20, 30, and 40 across the trunk.
+This allows VLANs 20, 30 and 40 across the trunk.
 
 This can be verified using:
 
@@ -446,7 +509,7 @@ This can be verified using:
 show interfaces trunk
 ```
 
-Example output may show:
+Example:
 
 ```text
 Port        Mode    Encapsulation  Status     Native vlan
@@ -456,13 +519,15 @@ Port        Vlans allowed on trunk
 Gi1/0/24    20,30,40
 ```
 
+> **Key takeaway:** A VLAN may exist on a switch but still fail to communicate across a trunk if that VLAN is not allowed on the trunk.
+
 ---
 
-## Native VLAN
+# 15. Native VLAN
 
 802.1Q trunks also have a **native VLAN**.
 
-By default on many Cisco switch configurations, the native VLAN is:
+On many Cisco configurations, the default native VLAN is:
 
 ```text
 VLAN 1
@@ -490,7 +555,7 @@ A native VLAN mismatch can cause unexpected behaviour and may generate switch wa
 
 ---
 
-## Verifying Trunk Configuration
+# 16. Verifying Trunk Configuration
 
 One of the most useful commands is:
 
@@ -514,13 +579,13 @@ These commands help verify:
 
 ---
 
-## Access Port vs Trunk Port
+# 17. Access Port vs Trunk Port
 
 | Feature | Access Port | Trunk Port |
 |---|---|---|
 | Typical purpose | Connect an end device | Connect network devices |
 | VLANs carried | Normally one | Multiple |
-| End-device frames | Normally untagged | VLAN traffic identified using 802.1Q |
+| End-device traffic | Normally untagged | Multiple VLANs identified using 802.1Q |
 | Example | PC → Switch | Switch → Switch |
 | Configuration | `switchport mode access` | `switchport mode trunk` |
 
@@ -528,7 +593,7 @@ These commands help verify:
 
 ---
 
-## Inter-VLAN Communication
+# 18. Inter-VLAN Communication
 
 Each VLAN represents a separate **Layer 2 broadcast domain** and normally uses a separate **IP subnet**.
 
@@ -542,13 +607,13 @@ For example:
 
 A host in VLAN 20 cannot communicate directly at Layer 2 with a host in VLAN 30 because they belong to different VLANs and different IP networks.
 
-To communicate between VLANs, traffic must be **routed at Layer 3**.
+Communication between VLANs requires **Layer 3 routing**.
 
 This process is called **Inter-VLAN Routing**.
 
 ---
 
-## Why Is a Router Required?
+# 19. Why Is a Layer 3 Device Required?
 
 Consider these two hosts:
 
@@ -567,7 +632,13 @@ VLAN 30
 192.168.30.10/24
 ```
 
-PC-A determines that `192.168.30.10` is outside its local subnet.
+PC-A determines that:
+
+```text
+192.168.30.10
+```
+
+is outside its local subnet.
 
 Instead of trying to communicate directly with PC-B, PC-A sends the packet toward its **default gateway**.
 
@@ -590,9 +661,9 @@ VLAN 30
 
 ---
 
-## Router-on-a-Stick (ROAS)
+# 20. Router-on-a-Stick
 
-One method of providing inter-VLAN routing is **Router-on-a-Stick**.
+One method of providing inter-VLAN routing is **Router-on-a-Stick (ROAS)**.
 
 With Router-on-a-Stick, one physical router interface is divided into multiple logical **subinterfaces**.
 
@@ -623,7 +694,7 @@ The link between the switch and router operates as an **802.1Q trunk** because t
 
 ---
 
-## Configuring Router-on-a-Stick
+# 21. Configuring Router-on-a-Stick
 
 Assume the router connects to the switch using:
 
@@ -640,7 +711,7 @@ no shutdown
 
 The physical interface itself does not require an IP address when its subinterfaces are being used for the VLAN gateways.
 
-### VLAN 20 Subinterface
+## VLAN 20 Subinterface
 
 ```cisco
 interface GigabitEthernet0/0/1.20
@@ -648,7 +719,7 @@ encapsulation dot1Q 20
 ip address 192.168.20.1 255.255.255.0
 ```
 
-### VLAN 30 Subinterface
+## VLAN 30 Subinterface
 
 ```cisco
 interface GigabitEthernet0/0/1.30
@@ -656,7 +727,7 @@ encapsulation dot1Q 30
 ip address 192.168.30.1 255.255.255.0
 ```
 
-### VLAN 40 Subinterface
+## VLAN 40 Subinterface
 
 ```cisco
 interface GigabitEthernet0/0/1.40
@@ -674,7 +745,7 @@ associates that router subinterface with **802.1Q VLAN 20 traffic**.
 
 ---
 
-## Default Gateways
+# 22. Default Gateways
 
 Hosts in each VLAN must use a Layer 3 interface in their own subnet as their **default gateway**.
 
@@ -690,14 +761,17 @@ For example:
 
 ```text
 PC-A
+
 IP Address:      192.168.20.10
 Subnet Mask:     255.255.255.0
 Default Gateway: 192.168.20.1
 ```
 
+The default gateway provides the Layer 3 path out of the local VLAN/subnet.
+
 ---
 
-## Switch Port Toward the Router
+# 23. Switch Port Toward the Router
 
 Because the router is handling multiple VLANs, the switch interface connected to it must operate as a trunk.
 
@@ -737,14 +811,15 @@ PC VLAN 30
 
 > **Key takeaway:** VLANs separate networks at Layer 2. Inter-VLAN routing provides controlled Layer 3 communication between those separate networks.
 
+---
+
+# 24. VLAN Verification and Troubleshooting
+
+After configuring VLANs, access ports, trunks and inter-VLAN routing, I verify each layer separately rather than assuming the entire configuration is working.
 
 ---
 
-## VLAN Verification and Troubleshooting
-
-After configuring VLANs, access ports, trunks, and inter-VLAN routing, I verify each layer separately rather than assuming the entire configuration is working.
-
-### 1. Verify VLANs Exist
+## 24.1 Verify VLANs Exist
 
 ```cisco
 show vlan brief
@@ -752,14 +827,14 @@ show vlan brief
 
 I use this command to confirm:
 
-- The required VLAN IDs exist
+- Required VLAN IDs exist
 - VLAN names are correct
 - VLANs are active
 - Access ports are assigned to the expected VLANs
 
 ---
 
-### 2. Verify the Switchport Configuration
+## 24.2 Verify the Switchport Configuration
 
 For a specific interface:
 
@@ -771,7 +846,7 @@ This helps confirm whether the interface is operating as an access port or trunk
 
 ---
 
-### 3. Verify Trunk Links
+## 24.3 Verify Trunk Links
 
 ```cisco
 show interfaces trunk
@@ -799,7 +874,7 @@ If VLAN 40 is missing from the allowed VLAN list, VLAN 40 traffic cannot cross t
 
 ---
 
-### 4. Verify Router Subinterfaces
+## 24.4 Verify Router Subinterfaces
 
 On a router performing Router-on-a-Stick:
 
@@ -825,7 +900,7 @@ up    up
 
 ---
 
-### 5. Test Connectivity in Stages
+# 25. Test Connectivity in Stages
 
 Instead of immediately testing a distant device, I troubleshoot progressively.
 
@@ -855,11 +930,11 @@ For example:
 ping 192.168.20.1
 ```
 
-If the host cannot reach its own default gateway, I investigate the local VLAN, access port, trunk, IP addressing, and router subinterface before troubleshooting higher-level routing.
+If the host cannot reach its own default gateway, I investigate the local VLAN, access port, trunk, IP addressing and router subinterface before troubleshooting higher-level routing.
 
 ---
 
-## Common VLAN Problems
+# 26. Common VLAN Problems
 
 | Problem | What I Would Check |
 |---|---|
@@ -873,7 +948,7 @@ If the host cannot reach its own default gateway, I investigate the local VLAN, 
 
 ---
 
-## My Troubleshooting Approach
+# 27. My Troubleshooting Approach
 
 My preferred troubleshooting process is:
 
@@ -889,16 +964,17 @@ My preferred troubleshooting process is:
 
 > **Key takeaway:** Configuration commands tell me what I intended to build. Verification commands tell me what the network is actually doing.
 
-
 ---
 
-# Hands-On VLAN Lab
+# 28. Hands-On VLAN Lab
 
 After learning the VLAN concepts individually, I implemented them in Cisco Packet Tracer as part of a larger enterprise-style network.
 
 The goal of the lab was to segment different departments using VLANs and separate IP subnets while maintaining connectivity through the network infrastructure.
 
-## Lab VLAN Design
+---
+
+# 29. Lab VLAN Design
 
 I used the following VLANs:
 
@@ -911,7 +987,7 @@ I used the following VLANs:
 
 ---
 
-## VLSM Addressing Plan
+# 30. VLSM Addressing Plan
 
 Instead of assigning a `/24` network to every VLAN, I subnetted the available `192.168.1.0/24` address space using **Variable Length Subnet Masking (VLSM)**.
 
@@ -928,7 +1004,7 @@ The addressing plan was:
 
 ---
 
-## Creating the VLANs
+# 31. Creating the VLANs
 
 On the switches, I created the departmental VLANs:
 
@@ -956,7 +1032,7 @@ show vlan brief
 
 ---
 
-## Configuring the Trunk
+# 32. Configuring the Trunk
 
 The uplink needed to transport traffic from multiple VLANs, so I configured it as an 802.1Q trunk.
 
@@ -982,7 +1058,7 @@ During troubleshooting, this command became particularly useful because it allow
 
 ---
 
-## What I Learned From the Lab
+# 33. What I Learned From the Lab
 
 This lab helped me understand that successful VLAN communication depends on several configurations working together.
 
@@ -1011,87 +1087,34 @@ Each part of the forwarding path must be verified.
 
 ---
 
-## Skills Demonstrated
-
-Through this VLAN lab, I developed practical experience with:
-
-- Designing VLAN-based network segmentation
-- Creating and naming VLANs on Cisco switches
-- Configuring access ports
-- Configuring IEEE 802.1Q trunk links
-- Controlling which VLANs are allowed across trunks
-- Understanding tagged and untagged Ethernet traffic
-- Understanding native VLAN behaviour
-- Designing IPv4 subnets using VLSM
-- Configuring Router-on-a-Stick for inter-VLAN routing
-- Configuring and understanding default gateways
-- Verifying VLAN and trunk operation
-- Troubleshooting Layer 2 and Layer 3 connectivity
-
----
-
-## Key Commands
-
-```cisco
-show vlan brief
-show interfaces trunk
-show interfaces switchport
-show ip interface brief
-show running-config
-```
-
-These commands became particularly useful when verifying whether the network was operating according to the intended design.
-
----
-
-## Key Lessons Learned
-
-One of the most important lessons from this lab was that **VLAN configuration is not just about creating a VLAN**.
-
-Successful communication depends on the entire forwarding path being configured correctly:
-
-```text
-End Device
-    |
-    v
-Access Port
-    |
-    v
-VLAN Membership
-    |
-    v
-802.1Q Trunk
-    |
-    v
-Layer 3 Gateway
-    |
-    v
-Routing
-    |
-    v
-Destination Network
-```
-
-When troubleshooting, I learned to verify each stage individually rather than changing multiple configurations at once.
-
-
-## Network Design and Planning
+# 34. Network Design and Planning
 
 Before implementing the network in Cisco Packet Tracer, I planned the topology and major network technologies on a whiteboard.
 
-The design included VLAN segmentation, inter-VLAN routing, trunking, HSRP, OSPF, DHCP, RSTP, PortFast, gateway redundancy, and upstream ISP connectivity.
+The design included:
+
+- VLAN segmentation
+- Inter-VLAN routing
+- Trunking
+- HSRP
+- OSPF
+- DHCP
+- RSTP
+- PortFast
+- Gateway redundancy
+- Upstream ISP connectivity
 
 ![Hand-drawn VLAN network design](images/vlan-network-design-whiteboard.jpg)
 
-This initial design helped me visualise how the Layer 2 switching, Layer 3 routing, redundancy, and dynamic routing components would work together before implementing the topology.
+This initial design helped me visualise how the Layer 2 switching, Layer 3 routing, redundancy and dynamic routing components would work together before implementing the topology.
 
 I also learned the importance of using verification commands to confirm the actual operational state of the network instead of assuming that a configuration command was successful.
 
 > **My main takeaway:** Understand the packet path, configure each layer deliberately, and verify every stage.
 
+---
 
-
-### Packet Tracer Implementation
+# 35. Cisco Packet Tracer Implementation
 
 After completing the initial whiteboard design, I implemented the network topology in **Cisco Packet Tracer**.
 
@@ -1114,4 +1137,492 @@ During the implementation, I configured and tested technologies including:
 
 This lab also gave me experience troubleshooting the network layer by layer rather than treating the topology as a single configuration.
 
+---
 
+# 36. Skills Demonstrated
+
+Through this VLAN study and lab, I developed practical experience with:
+
+- Designing VLAN-based network segmentation
+- Creating and naming VLANs on Cisco switches
+- Configuring access ports
+- Configuring IEEE 802.1Q trunk links
+- Controlling which VLANs are allowed across trunks
+- Understanding tagged and untagged Ethernet traffic
+- Understanding native VLAN behaviour
+- Designing IPv4 subnets using VLSM
+- Configuring Router-on-a-Stick for inter-VLAN routing
+- Configuring and understanding default gateways
+- Verifying VLAN and trunk operation
+- Troubleshooting Layer 2 connectivity
+- Troubleshooting Layer 3 connectivity
+- Using Cisco IOS verification commands
+- Implementing VLANs in Cisco Packet Tracer
+- Planning network topology before implementation
+
+---
+
+# 37. Key Commands
+
+The following Cisco IOS commands became particularly useful during my VLAN study and lab work.
+
+## VLAN Verification
+
+```cisco
+show vlan brief
+```
+
+## Trunk Verification
+
+```cisco
+show interfaces trunk
+```
+
+## Switchport Verification
+
+```cisco
+show interfaces GigabitEthernet1/0/1 switchport
+```
+
+## Router Interface Verification
+
+```cisco
+show ip interface brief
+```
+
+## View Running Configuration
+
+```cisco
+show running-config
+```
+
+## Configure a VLAN
+
+```cisco
+configure terminal
+vlan 20
+name SALES
+```
+
+## Configure an Access Port
+
+```cisco
+interface GigabitEthernet1/0/1
+switchport mode access
+switchport access vlan 20
+no shutdown
+```
+
+## Configure a Trunk
+
+```cisco
+interface GigabitEthernet1/0/24
+switchport mode trunk
+switchport trunk allowed vlan 20,30,40,50
+no shutdown
+```
+
+---
+
+# 38. Layer 2 and Layer 3 Relationship
+
+One of the most important concepts I learned is that VLANs and routing solve different problems.
+
+### Layer 2
+
+VLANs provide:
+
+```text
+Logical segmentation
+        |
+        v
+Separate broadcast domains
+```
+
+### Layer 3
+
+Routing provides:
+
+```text
+Communication between
+different IP networks
+```
+
+Therefore:
+
+```text
+VLAN 20
+192.168.20.0/24
+      |
+      | Layer 2
+      v
+  VLAN 20
+      |
+      | Layer 3 Routing
+      v
+  VLAN 30
+      |
+      | Layer 2
+      v
+192.168.30.0/24
+```
+
+This distinction is fundamental when troubleshooting VLAN networks.
+
+---
+
+# 39. VLAN Packet Flow
+
+A simplified packet flow between two hosts in different VLANs can be represented as:
+
+```text
+PC-A
+VLAN 20
+192.168.20.10
+      |
+      | Access Port
+      v
+   SWITCH
+      |
+      | 802.1Q Trunk
+      v
+Layer 3 Gateway
+192.168.20.1
+      |
+      | Routing
+      v
+192.168.30.1
+      |
+      | 802.1Q Trunk
+      v
+   SWITCH
+      |
+      | Access Port
+      v
+PC-B
+VLAN 30
+192.168.30.10
+```
+
+The packet cannot simply move directly from VLAN 20 to VLAN 30 at Layer 2.
+
+It must pass through a Layer 3 gateway.
+
+---
+
+# 40. Important VLAN Concepts
+
+The following relationships are important to remember:
+
+```text
+VLAN
+  ↓
+Layer 2 segmentation
+  ↓
+Broadcast domain
+  ↓
+Usually associated with an IP subnet
+  ↓
+Default gateway provides Layer 3 exit
+  ↓
+Router / Layer 3 switch performs inter-VLAN routing
+```
+
+---
+
+# 41. Key Lessons Learned
+
+One of the most important lessons from this study was that **VLAN configuration is not just about creating a VLAN**.
+
+Successful communication depends on the entire forwarding path being configured correctly.
+
+```text
+End Device
+    |
+    v
+Access Port
+    |
+    v
+VLAN Membership
+    |
+    v
+802.1Q Trunk
+    |
+    v
+Allowed VLAN
+    |
+    v
+Layer 3 Gateway
+    |
+    v
+Routing
+    |
+    v
+Destination Network
+```
+
+When troubleshooting, I learned to verify each stage individually rather than changing multiple configurations at once.
+
+---
+
+# 42. Troubleshooting Mindset
+
+My VLAN troubleshooting mindset is based on following the packet path.
+
+Instead of asking:
+
+> "Why isn't the network working?"
+
+I break the problem into smaller questions:
+
+```text
+Is the interface physically up?
+        |
+        v
+Is the host correctly addressed?
+        |
+        v
+Is the correct VLAN created?
+        |
+        v
+Is the switchport assigned correctly?
+        |
+        v
+Is the trunk working?
+        |
+        v
+Is the VLAN allowed?
+        |
+        v
+Is the native VLAN correct?
+        |
+        v
+Is the default gateway correct?
+        |
+        v
+Is Layer 3 routing working?
+        |
+        v
+Can the destination be reached?
+```
+
+This approach makes troubleshooting more systematic and reduces unnecessary configuration changes.
+
+---
+
+# 43. Final Summary
+
+A **VLAN (Virtual Local Area Network)** provides logical Layer 2 segmentation within a switched network.
+
+VLANs allow a physical network to be divided into separate broadcast domains without requiring a completely separate physical switching infrastructure for every department.
+
+The main concepts I studied include:
+
+- VLAN creation
+- VLAN IDs
+- VLAN naming
+- Broadcast domains
+- Access ports
+- Access-port VLAN membership
+- Untagged Ethernet traffic
+- IEEE 802.1Q
+- Trunk ports
+- Native VLAN
+- Allowed VLANs
+- Inter-VLAN routing
+- Router-on-a-Stick
+- Default gateways
+- VLSM
+- VLAN verification
+- VLAN troubleshooting
+- Cisco IOS commands
+- Cisco Packet Tracer implementation
+
+The most important distinction is:
+
+```text
+VLAN
+  ↓
+Layer 2 segmentation
+
+Routing
+  ↓
+Layer 3 communication between networks
+```
+
+A successful VLAN implementation requires more than simply creating the VLAN.
+
+The entire forwarding path must work:
+
+```text
+End Device
+    ↓
+Access Port
+    ↓
+VLAN
+    ↓
+Trunk
+    ↓
+Allowed VLAN
+    ↓
+Layer 3 Gateway
+    ↓
+Routing
+    ↓
+Destination VLAN
+    ↓
+Destination Host
+```
+
+---
+
+# 44. Key Takeaways
+
+The main concepts I learned from this VLAN study are:
+
+- A VLAN is a logical Layer 2 network.
+- Each VLAN represents a separate broadcast domain.
+- VLANs provide logical network segmentation.
+- VLANs can help organise networks by department or function.
+- VLANs alone are not a complete security control.
+- A VLAN is identified using a VLAN ID.
+- IEEE 802.1Q uses a 12-bit VLAN identifier field.
+- VLAN IDs 0 and 4095 are reserved.
+- VLAN IDs 1–4094 are commonly used for VLAN identification.
+- Creating a VLAN does not automatically assign ports to it.
+- Access ports normally carry traffic for one VLAN.
+- End devices connected to access ports normally send untagged Ethernet frames.
+- The switch associates untagged access-port traffic with the configured access VLAN.
+- Trunk ports carry traffic for multiple VLANs.
+- IEEE 802.1Q provides VLAN identification across trunk links.
+- The native VLAN is normally transmitted untagged on an 802.1Q trunk.
+- Both ends of a trunk should use the same native VLAN.
+- Trunks can be restricted using an allowed VLAN list.
+- Different VLANs normally use different IP subnets.
+- Communication between VLANs requires Layer 3 routing.
+- Hosts require a default gateway to communicate outside their local subnet.
+- Router-on-a-Stick uses router subinterfaces for multiple VLAN gateways.
+- VLSM allows different subnet sizes to be allocated according to requirements.
+- `show vlan brief` verifies VLAN and access-port membership.
+- `show interfaces trunk` verifies trunk operation and VLANs allowed across the trunk.
+- `show interfaces <interface> switchport` provides detailed switchport information.
+- `show ip interface brief` helps verify Layer 3 interfaces and subinterfaces.
+- VLAN troubleshooting should follow the packet path.
+- Verification is just as important as configuration.
+- Cisco Packet Tracer provides a useful environment for implementing and testing VLAN concepts.
+
+---
+
+# 45. VLAN Learning Progress
+
+Topics studied:
+
+- [x] Introduction to VLANs
+- [x] VLAN segmentation
+- [x] Broadcast domains
+- [x] VLAN IDs
+- [x] VLAN creation
+- [x] VLAN naming
+- [x] Access ports
+- [x] Access-port configuration
+- [x] Access-port traffic
+- [x] VLAN verification
+- [x] IEEE 802.1Q
+- [x] Trunk ports
+- [x] Allowed VLANs
+- [x] Native VLAN
+- [x] Access vs trunk ports
+- [x] Inter-VLAN communication
+- [x] Router-on-a-Stick
+- [x] Default gateways
+- [x] VLSM
+- [x] VLAN troubleshooting
+- [x] Cisco IOS verification commands
+- [x] Cisco Packet Tracer implementation
+- [x] Network design and planning
+- [x] RSTP
+- [x] PortFast
+- [x] HSRP
+- [x] OSPF
+- [x] DHCP
+- [x] End-to-end connectivity testing
+
+---
+
+# 46. Practical Lab Evidence
+
+## Network Design
+
+![Hand-drawn VLAN network design](images/vlan-network-design-whiteboard.jpg)
+
+The initial network design was created before implementation to plan VLAN segmentation, Layer 2 switching, Layer 3 routing, redundancy and upstream connectivity.
+
+## Cisco Packet Tracer Topology
+
+![Cisco Packet Tracer VLAN topology](images/vlan-packet-tracer-topology.png)
+
+The topology was then implemented in Cisco Packet Tracer to test the planned configuration and verify end-to-end connectivity.
+
+---
+
+# 47. Final Reflection
+
+Studying VLANs helped me move beyond simply understanding individual Cisco commands and start thinking about **how traffic actually moves through a network**.
+
+The most valuable part of the practical work was learning to connect:
+
+```text
+VLAN
+   ↓
+Switchport
+   ↓
+Trunk
+   ↓
+802.1Q
+   ↓
+Layer 3 Gateway
+   ↓
+Routing
+   ↓
+Destination
+```
+
+This helped me develop a more structured approach to network design and troubleshooting.
+
+Rather than changing configurations until connectivity works, I now aim to understand the expected packet path first and then verify each stage of that path.
+
+> **My main takeaway:** Understand the packet path, configure each layer deliberately, and verify what the network is actually doing.
+
+---
+
+## Repository Structure
+
+```text
+02-VLAN/
+│
+├── README.md
+│
+└── images/
+    ├── vlan-network-design-whiteboard.jpg
+    └── vlan-packet-tracer-topology.png
+```
+
+---
+
+## Technologies and Tools
+
+- Cisco IOS
+- Cisco switches
+- Cisco routers
+- Cisco Packet Tracer
+- IEEE 802.1Q
+- VLAN
+- Inter-VLAN Routing
+- Router-on-a-Stick
+- VLSM
+- RSTP
+- PortFast
+- HSRP
+- OSPF
+- DHCP
+- Network troubleshooting
