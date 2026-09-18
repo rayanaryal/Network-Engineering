@@ -63,7 +63,6 @@ Each router that forwards an IP packet decreases its TTL.
 
 Conceptually:
 
-```text
 TTL = 64
    ↓ Router
 TTL = 63
