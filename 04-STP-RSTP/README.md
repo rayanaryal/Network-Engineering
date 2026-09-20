@@ -126,7 +126,7 @@ In a redundant switched topology:
     SW2-----SW3
 ```
 
-a broadcast frame can be forwarded through multiple paths and repeatedly circulate through the Layer 2 topology.
+A broadcast frame can be forwarded through multiple paths and repeatedly circulate through the Layer 2 topology.
 
 This can lead to:
 
