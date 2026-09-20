@@ -215,6 +215,7 @@ Bridge ID
 ```
 
 ---
+![STP whiteboard Glance ](images/STP-BPDU.jpeg)
 
 ## Bridge Priority
 
