@@ -1,203 +1,202 @@
 # IPv6
 
-This section covers **IPv6 (Internet Protocol version 6)** and the IPv6 topics required for CCNA preparation.
+This section documents my understanding and hands-on study of **IPv6**, including IPv6 addressing, address representation, address types, IPv6 headers, Neighbor Discovery Protocol (NDP), SLAAC, Duplicate Address Detection (DAD), and IPv6 static routing.
 
-The notes cover:
-
-- IPv6 addressing
-- IPv6 address types
-- Hexadecimal and binary conversion
-- IPv6 address structure
-- IPv6 address shortening and expansion
-- IPv6 prefixes
-- Global Unicast Addresses
-- Unique Local Addresses
-- Link-Local Addresses
-- Multicast
-- Multicast scopes and groups
-- Anycast
-- Modified EUI-64
-- Configuring IPv6 addresses on Cisco routers
-- IPv6 routing
-- Other IPv6 addresses
-- CCNA-style IPv6 questions
+These notes are based on my CCNA study material and practical Cisco networking learning.
 
 ---
 
 # Table of Contents
 
 1. [Exam Topics](#1-exam-topics)
-2. [Things We Will Be Covering](#2-things-we-will-be-covering)
-3. [What About IPv5](#3-what-about-ipv5)
-4. [Hexadecimal](#4-hexadecimal)
-5. [Binary to Hexadecimal](#5-binary-to-hexadecimal)
-6. [Hexadecimal to Binary](#6-hexadecimal-to-binary)
-7. [Why IPv6](#7-why-ipv6)
-8. [IPv6 Basics](#8-ipv6-basics)
-9. [Shortening IPv6 Addresses](#9-shortening-ipv6-addresses)
-10. [Expanding Shortened IPv6 Addresses](#10-expanding-shortened-ipv6-addresses)
-11. [Finding the IPv6 Prefix](#11-finding-the-ipv6-prefix)
-12. [Finding IPv6 Prefixes with Different Prefix Lengths](#12-finding-ipv6-prefixes-with-different-prefix-lengths)
-13. [Configuring IPv6 Addresses on a Router](#13-configuring-ipv6-addresses-on-a-router)
-14. [Modified EUI-64](#14-modified-eui-64)
-15. [EUI-64 Examples](#15-eui-64-examples)
-16. [Configuring IPv6 Addresses with EUI-64](#16-configuring-ipv6-addresses-with-eui-64)
-17. [Why Is the 7th Bit Inverted](#17-why-is-the-7th-bit-inverted)
+2. [IPv6 Overview](#2-ipv6-overview)
+3. [Hexadecimal](#3-hexadecimal)
+4. [Binary to Hexadecimal](#4-binary-to-hexadecimal)
+5. [Hexadecimal to Binary](#5-hexadecimal-to-binary)
+6. [Why IPv6](#6-why-ipv6)
+7. [IPv6 Address Representation](#7-ipv6-address-representation)
+8. [Shortening IPv6 Addresses](#8-shortening-ipv6-addresses)
+9. [Expanding IPv6 Addresses](#9-expanding-ipv6-addresses)
+10. [IPv6 Prefixes](#10-ipv6-prefixes)
+11. [Configuring IPv6 on a Cisco Router](#11-configuring-ipv6-on-a-cisco-router)
+12. [Modified EUI-64](#12-modified-eui-64)
+13. [Why a 64-bit Interface Identifier](#13-why-a-64-bit-interface-identifier)
+14. [What EUI-64 Solves](#14-what-eui-64-solves)
+15. [EUI-64 Conversion](#15-eui-64-conversion)
+16. [Why Invert the 7th Bit](#16-why-invert-the-7th-bit)
+17. [IPv6 Address Types](#17-ipv6-address-types)
 18. [Global Unicast Addresses](#18-global-unicast-addresses)
 19. [Unique Local Addresses](#19-unique-local-addresses)
 20. [Link-Local Addresses](#20-link-local-addresses)
 21. [Multicast Addresses](#21-multicast-addresses)
 22. [Multicast Address Scopes](#22-multicast-address-scopes)
-23. [Multicast Groups](#23-multicast-groups)
+23. [IPv6 Multicast Groups](#23-ipv6-multicast-groups)
 24. [Anycast Addresses](#24-anycast-addresses)
-25. [Anycast Address Configuration](#25-anycast-address-configuration)
-26. [Other IPv6 Addresses](#26-other-ipv6-addresses)
-27. [CCNA IPv6 Quiz and Revision](#27-ccna-ipv6-quiz-and-revision)
+25. [Other IPv6 Addresses](#25-other-ipv6-addresses)
+26. [IPv6 Header vs IPv4 Header](#26-ipv6-header-vs-ipv4-header)
+27. [IPv6 Header Fields](#27-ipv6-header-fields)
+28. [Version](#28-version)
+29. [Traffic Class](#29-traffic-class)
+30. [Flow Label](#30-flow-label)
+31. [Payload Length](#31-payload-length)
+32. [Next Header](#32-next-header)
+33. [Hop Limit](#33-hop-limit)
+34. [Source and Destination Addresses](#34-source-and-destination-addresses)
+35. [Solicited-Node Multicast Address](#35-solicited-node-multicast-address)
+36. [Solicited-Node Multicast Address CLI](#36-solicited-node-multicast-address-cli)
+37. [Neighbor Discovery Protocol](#37-neighbor-discovery-protocol)
+38. [Neighbor Solicitation](#38-neighbor-solicitation)
+39. [Neighbor Advertisement](#39-neighbor-advertisement)
+40. [IPv6 Neighbor Table](#40-ipv6-neighbor-table)
+41. [SLAAC](#41-slaac)
+42. [Duplicate Address Detection](#42-duplicate-address-detection)
+43. [IPv6 Static Routing](#43-ipv6-static-routing)
+44. [Link-Local Next-Hops](#44-link-local-next-hops)
+45. [IPv6 Revision and Quiz](#45-ipv6-revision-and-quiz)
+46. [Final IPv6 Cheat Sheet](#46-final-ipv6-cheat-sheet)
 
 ---
 
 # 1. Exam Topics
 
-The main IPv6-related CCNA topics covered in these notes are:
+The main IPv6 topics required for CCNA preparation include:
 
-### Configure and Verify IPv6 Addressing and Prefixes
-
-Understanding how to:
-
-- Configure IPv6 addresses
-- Identify IPv6 prefixes
-- Understand the structure of IPv6 addresses
-- Verify IPv6 addressing
-
-### Configure and Verify IPv6 Static Routing
-
-IPv6 routing topics include:
-
-- Default routes
-- Network routes
-- Host routes
-- Floating static routes
-
-### Compare IPv6 Address Types
-
-Important IPv6 address types include:
-
-- Global Unicast
-- Unique Local
-- Link-Local
-- Multicast
-- Anycast
-- Other special IPv6 addresses
-
----
-
-# 2. Things We Will Be Covering
-
-The IPv6 study material is divided into two major parts.
-
-## Part 1
-
-The first part covers:
-
-- Hexadecimal
-- Why IPv6 was introduced
-- IPv6 basics
-- Configuring IPv6 addresses
+- IPv6 addressing
+- IPv6 address representation
 - IPv6 prefixes
-
-## Part 2
-
-The second part covers:
-
-- Continued IPv6 address configuration
-- Modified EUI-64
 - IPv6 address types
-- Global Unicast
-- Unique Local
-- Link-Local
+- IPv6 configuration
+- Modified EUI-64
+- Global Unicast Addresses
+- Unique Local Addresses
+- Link-Local Addresses
 - Multicast
 - Anycast
-- Other IPv6 addresses
+- IPv6 headers
+- Neighbor Discovery Protocol
+- Neighbor Solicitation
+- Neighbor Advertisement
+- IPv6 Neighbor Table
+- SLAAC
+- Duplicate Address Detection
+- IPv6 static routing
+- Link-local next-hops
 
-A simplified view:
+The overall IPv6 study path can be represented as:
 
 ```text
 IPv6
  |
- +-- Hexadecimal
+ +-- Addressing
+ |    |
+ |    +-- Representation
+ |    +-- Shortening
+ |    +-- Expansion
+ |    +-- Prefixes
  |
- +-- Why IPv6?
+ +-- Address Generation
+ |    |
+ |    +-- Manual
+ |    +-- EUI-64
+ |    +-- SLAAC
  |
- +-- IPv6 Addressing
- |     |
- |     +-- Shortening
- |     +-- Expanding
- |     +-- Prefixes
+ +-- Address Types
+ |    |
+ |    +-- Global Unicast
+ |    +-- Unique Local
+ |    +-- Link-Local
+ |    +-- Multicast
+ |    +-- Anycast
+ |    +-- Special Addresses
  |
- +-- Configuration
- |     |
- |     +-- Manual IPv6 address
- |     +-- EUI-64
+ +-- IPv6 Header
+ |    |
+ |    +-- Version
+ |    +-- Traffic Class
+ |    +-- Flow Label
+ |    +-- Payload Length
+ |    +-- Next Header
+ |    +-- Hop Limit
+ |    +-- Source
+ |    +-- Destination
  |
- +-- IPv6 Address Types
-       |
-       +-- Global Unicast
-       +-- Unique Local
-       +-- Link-Local
-       +-- Multicast
-       +-- Anycast
-       +-- Other
+ +-- Neighbor Discovery
+ |    |
+ |    +-- NDP
+ |    +-- NS
+ |    +-- NA
+ |    +-- Neighbor Table
+ |    +-- SLAAC
+ |    +-- DAD
+ |
+ +-- Routing
+      |
+      +-- Static Routes
+      +-- Link-Local Next-Hops
 ```
 
 ---
 
-# 3. What About IPv5?
+# 2. IPv6 Overview
 
-IPv5 was never actually introduced as the public successor to IPv4.
+IPv6 was developed as the successor to IPv4.
 
-An **Internet Stream Protocol** was developed in the late 1970s.
-
-It was never introduced for public use, but it used:
+The biggest difference in addressing is:
 
 ```text
-5
+IPv4 = 32 bits
+IPv6 = 128 bits
 ```
 
-as the value in the IP header's Version field.
+IPv6 uses hexadecimal notation.
 
-Therefore, when the successor to IPv4 was developed, it was named:
+A complete IPv6 address contains:
 
 ```text
-IPv6
+8 hextets
 ```
 
-rather than IPv5.
+Each hextet contains:
+
+```text
+4 hexadecimal digits
+```
+
+Each hextet therefore represents:
+
+```text
+16 bits
+```
+
+So:
+
+```text
+8 × 16 = 128 bits
+```
+
+Example:
+
+```text
+2001:0DB8:5917:EABD:6562:17EA:C92D:59BD
+```
 
 ---
 
-# 4. Hexadecimal
+# 3. Hexadecimal
 
-IPv6 uses **hexadecimal notation**.
-
-Hexadecimal is:
+IPv6 uses:
 
 ```text
 Base 16
 ```
 
-and is commonly represented with:
-
-```text
-0x
-```
-
-The hexadecimal digits are:
+Hexadecimal uses:
 
 ```text
 0 1 2 3 4 5 6 7 8 9 A B C D E F
 ```
 
-The letters represent decimal values:
+The letters represent:
 
 ```text
 A = 10
@@ -217,7 +216,6 @@ F = 15
 ```text
 Base 2
 
-Digits:
 0
 1
 ```
@@ -225,68 +223,48 @@ Digits:
 Example:
 
 ```text
-0b10
+Binary 10 = Decimal 2
 ```
-
-This is:
-
-```text
-Decimal 2
-```
-
----
 
 ### Decimal
 
 ```text
 Base 10
 
-Digits:
-
 0 1 2 3 4 5 6 7 8 9
 ```
-
----
 
 ### Hexadecimal
 
 ```text
 Base 16
 
-Digits:
-
 0 1 2 3 4 5 6 7 8 9 A B C D E F
 ```
 
-For example:
+Example:
 
 ```text
-Hexadecimal 10
-```
-
-means:
-
-```text
-Decimal 16
-```
-
-This is different from:
-
-```text
-Binary 10 = Decimal 2
+Hexadecimal 10 = Decimal 16
 ```
 
 ---
 
-# 5. Binary to Hexadecimal
+# 4. Binary to Hexadecimal
 
-Each hexadecimal digit represents exactly **4 binary bits**.
+Every hexadecimal digit represents exactly:
+
+```text
+4 binary bits
+```
 
 Therefore, to convert binary to hexadecimal:
 
-1. Split the binary number into groups of 4 bits.
-2. Convert each 4-bit group into hexadecimal.
+```text
+1. Divide the binary number into groups of 4 bits.
+2. Convert each group to hexadecimal.
 3. Combine the hexadecimal digits.
+```
 
 ---
 
@@ -306,11 +284,11 @@ Split into groups of four:
 1101 1011
 ```
 
-Convert each group:
+Convert:
 
 ```text
-1101 = 13 = D
-1011 = 11 = B
+1101 = D
+1011 = B
 ```
 
 Therefore:
@@ -319,46 +297,9 @@ Therefore:
 11011011 = DB
 ```
 
-or:
-
-```text
-0b11011011 = 0xDB
-```
-
 ---
 
-## Another Example
-
-Convert:
-
-```text
-00101111
-```
-
-to hexadecimal.
-
-Split:
-
-```text
-0010 1111
-```
-
-Convert:
-
-```text
-0010 = 2
-1111 = F
-```
-
-Therefore:
-
-```text
-00101111 = 0x2F
-```
-
----
-
-## Important Conversion Table
+## Binary to Hexadecimal Table
 
 ```text
 Binary   Decimal   Hex
@@ -383,41 +324,27 @@ Binary   Decimal   Hex
 
 ---
 
-# 6. Hexadecimal to Binary
-
-The reverse process is also important.
-
-Each hexadecimal digit represents **4 binary bits**.
+# 5. Hexadecimal to Binary
 
 To convert hexadecimal to binary:
 
-1. Split the hexadecimal number into individual digits.
-2. Convert each hexadecimal digit into its 4-bit binary equivalent.
-3. Combine the binary groups.
+```text
+1. Separate each hexadecimal digit.
+2. Convert each digit to 4 binary bits.
+3. Combine the groups.
+```
 
----
-
-## Example
-
-Convert:
+Example:
 
 ```text
 EC
 ```
 
-to binary.
-
-Split:
-
-```text
-E C
-```
-
 Convert:
 
 ```text
-E = 14 = 1110
-C = 12 = 1100
+E = 1110
+C = 1100
 ```
 
 Therefore:
@@ -426,27 +353,19 @@ Therefore:
 EC = 11101100
 ```
 
-or:
-
-```text
-0xEC = 0b11101100
-```
-
 ---
 
 ## Another Example
-
-Convert:
 
 ```text
 D7
 ```
 
-to binary.
+Convert:
 
 ```text
-D = 13 = 1101
-7 = 7  = 0111
+D = 1101
+7 = 0111
 ```
 
 Therefore:
@@ -457,11 +376,9 @@ D7 = 11010111
 
 ---
 
-# 7. Why IPv6?
+# 6. Why IPv6
 
-The main reason for IPv6 is:
-
-> **There are not enough IPv4 addresses.**
+The primary reason for IPv6 is the limitation of IPv4 address space.
 
 IPv4 uses:
 
@@ -477,118 +394,71 @@ which provides:
 
 possible addresses.
 
-That is:
+That is approximately:
 
 ```text
-4,294,967,296
+4.29 billion addresses
 ```
 
-IPv4 addresses.
+As the Internet grew, IPv4 address space became insufficient.
 
-When IPv4 was originally designed, the creators could not predict how large the Internet would become.
-
-Several techniques were developed to conserve IPv4 address space:
+Several techniques helped conserve IPv4 addresses:
 
 ```text
-VLSM
 Private IPv4 addresses
 NAT
+VLSM
 ```
 
-These helped extend the useful life of IPv4.
+However, IPv6 provides a much larger address space.
 
-However, they are not the long-term solution to IPv4 address exhaustion.
-
-The long-term solution is:
-
-```text
-IPv6
-```
-
----
-
-## IPv4 Address Allocation
-
-IPv4 address assignments are controlled by:
-
-> **IANA — Internet Assigned Numbers Authority**
-
-IANA distributes IPv4 address space to:
-
-> **RIRs — Regional Internet Registries**
-
-The RIRs then assign address space to organisations that require it.
-
-Examples of RIRs include:
-
-```text
-ARIN
-RIPE NCC
-APNIC
-AFRINIC
-LACNIC
-```
-
-The notes highlight historical IPv4 exhaustion events, including:
-
-```text
-24 September 2015
-ARIN declared exhaustion of its IPv4 address pool.
-```
-
-and:
-
-```text
-21 August 2020
-LACNIC announced its final IPv4 allocation.
-```
-
----
-
-## IPv6 Address Space
-
-An IPv6 address is:
+IPv6 uses:
 
 ```text
 128 bits
 ```
 
-compared with:
+and provides:
 
 ```text
-IPv4 = 32 bits
-IPv6 = 128 bits
+2^128
 ```
 
-IPv6 therefore provides an enormous number of possible addresses:
-
-```text
-340,282,366,920,938,463,463,374,607,431,768,211,456
-```
-
-possible IPv6 addresses.
+possible addresses.
 
 ---
 
-## IPv6 Address Example
+## IPv4 vs IPv6
 
-An IPv6 address is normally written using hexadecimal.
+```text
+IPv4
+32 bits
+        ↓
+Limited address space
+
+IPv6
+128 bits
+        ↓
+Massive address space
+```
+
+---
+
+# 7. IPv6 Address Representation
+
+A full IPv6 address consists of:
+
+```text
+8 hextets
+```
+
+separated by colons.
 
 Example:
 
 ```text
-4201:0DB8:5917:EABD:6562:17EA:C92D:59BD/64
+2001:0DB8:5917:EABD:6562:17EA:C92D:59BD
 ```
-
-An IPv6 address contains:
-
-```text
-8 hexadecimal groups
-```
-
-Each group is called a:
-
-> **Hextet**
 
 Each hextet contains:
 
@@ -596,34 +466,44 @@ Each hextet contains:
 4 hexadecimal digits
 ```
 
+Example:
+
+```text
+2001
+0DB8
+5917
+EABD
+6562
+17EA
+C92D
+59BD
+```
+
+Each hextet represents:
+
+```text
+16 bits
+```
+
 Therefore:
 
 ```text
-8 hextets × 16 bits = 128 bits
+8 × 16 = 128 bits
 ```
 
 ---
 
-# 8. IPv6 Basics
+## Typical `/64` Structure
 
-The basic structure of an IPv6 address can be represented as:
-
-```text
-128 bits
-┌─────────────────────────────────────────────────────────────┐
-│                         IPv6 Address                        │
-└─────────────────────────────────────────────────────────────┘
-```
-
-A `/64` IPv6 address can commonly be divided into:
+A `/64` IPv6 network commonly consists of:
 
 ```text
 64-bit Prefix
-        +
++
 64-bit Interface Identifier
 ```
 
-For example:
+Example:
 
 ```text
 2001:DB8:8B00:0001:0000:0000:0000:0001/64
@@ -633,34 +513,29 @@ Conceptually:
 
 ```text
 2001:DB8:8B00:0001 | 0000:0000:0000:0001
-        Prefix       | Interface Identifier
-          64 bits    |      64 bits
+       64 bits       |       64 bits
+          Prefix     | Interface Identifier
 ```
-
-The exact structure depends on the IPv6 address type and prefix length.
 
 ---
 
-# 9. Shortening IPv6 Addresses
+# 8. Shortening IPv6 Addresses
 
-IPv6 addresses can be shortened to make them easier to read.
-
-There are two major rules.
+IPv6 addresses can be shortened using two main rules.
 
 ---
 
 ## Rule 1 — Remove Leading Zeros
 
-Leading zeros in each hextet can be removed.
+Leading zeros in a hextet can be removed.
 
-For example:
+Example:
 
 ```text
 0001 → 1
-```
-
-```text
 0DB8 → DB8
+0020 → 20
+0080 → 80
 ```
 
 Example:
@@ -669,7 +544,7 @@ Example:
 2001:0DB8:0000:0000:20A1:0020:0080:34BD
 ```
 
-can become:
+becomes:
 
 ```text
 2001:DB8:0:0:20A1:20:80:34BD
@@ -677,18 +552,12 @@ can become:
 
 ---
 
-## Rule 2 — Consecutive Zero Hextets Can Become `::`
-
-One sequence of consecutive all-zero hextets can be replaced by:
-
-```text
-::
-```
+## Rule 2 — Replace Consecutive Zero Hextets with `::`
 
 Example:
 
 ```text
-2001:DB8:0000:0000:0000:0000:0080:34BD
+2001:DB8:0:0:0:0:80:34BD
 ```
 
 can become:
@@ -697,111 +566,48 @@ can become:
 2001:DB8::80:34BD
 ```
 
----
-
-## Important Rule for `::`
-
-The double colon:
+Important:
 
 ```text
-::
-```
-
-can only be used **once** in an IPv6 address.
-
-Do not use it more than once because the receiver would not know how many zero hextets each `::` represents.
-
----
-
-## Example
-
-Full address:
-
-```text
-2001:DB8:0000:0000:20A1:0020:0080:34BD
-```
-
-Remove leading zeros:
-
-```text
-2001:DB8:0:0:20A1:20:80:34BD
-```
-
-Compress consecutive zero hextets:
-
-```text
-2001:DB8::20A1:20:80:34BD
+:: can only be used once.
 ```
 
 ---
 
-## Practice Examples
-
-The notes include examples such as:
+## IPv6 Shortening Examples
 
 ```text
 2000:AB78:20:1BF:ED89::1
+```
 
+```text
 FE80::2:0:0:FBE8
+```
 
+```text
 AE89:2100:1AC:F0::20F
+```
 
+```text
 2001:DB8:8B00:1000:2:BC0:D07:99
+```
 
+```text
 2001:DB8::1000
 ```
 
-Remember:
-
-```text
-Leading zeros → remove them
-
-Consecutive zero hextets → replace with ::
-```
-
-but:
-
-```text
-:: can only appear once
-```
-
 ---
 
-# 10. Expanding Shortened IPv6 Addresses
+# 9. Expanding IPv6 Addresses
 
-When expanding an IPv6 address, reverse the shortening process.
-
-There are two main steps.
-
----
-
-## Step 1 — Add Leading Zeros
-
-Every hextet must contain four hexadecimal characters.
-
-Example:
+When expanding an IPv6 address:
 
 ```text
-FE80:2:0:0:FBE8
+1. Add leading zeros.
+2. Expand ::
+3. Make exactly 8 hextets.
+4. Make every hextet exactly 4 hexadecimal digits.
 ```
-
-First add leading zeros:
-
-```text
-FE80:0002:0000:0000:FBE8
-```
-
----
-
-## Step 2 — Expand `::`
-
-If `::` is present, replace it with enough:
-
-```text
-0000
-```
-
-hextets to produce exactly **8 hextets**.
 
 ---
 
@@ -810,102 +616,34 @@ hextets to produce exactly **8 hextets**.
 Shortened:
 
 ```text
-FE80::2:0:0:FBE8
-```
-
-We already have:
-
-```text
-FE80
-2
-0
-0
-FBE8
-```
-
-That is:
-
-```text
-5 hextets
-```
-
-IPv6 requires:
-
-```text
-8 hextets
-```
-
-Therefore `::` represents:
-
-```text
-3 hextets of zeros
+2001:DB8::1
 ```
 
 Expanded:
 
 ```text
-FE80:0000:0000:0000:0002:0000:0000:FBE8
+2001:0DB8:0000:0000:0000:0000:0000:0001
 ```
 
 ---
 
-## Practice Examples
-
-Expand:
+## Examples from the Notes
 
 ```text
-FE80::2:0:0:FBE8
+FE80:0000:0000:0000:1010:02FC:0000:0009
 ```
-
-Answer:
-
-```text
-FE80:0000:0000:0000:0002:0000:0000:FBE8
-```
-
-Expand:
-
-```text
-2001:DB8:1:B23:2309::C1
-```
-
-Answer:
 
 ```text
 2001:0DB8:0001:0B23:2309:0000:0000:00C1
 ```
 
-Expand:
-
-```text
-FD00::1000:0689:9000:0CDF
-```
-
-Answer:
-
 ```text
 FD00:0000:0000:0000:1000:0689:9000:0CDF
 ```
 
-Expand:
-
-```text
-FF02::2
-```
-
-Answer:
-
 ```text
 FF02:0000:0000:0000:0000:0000:0000:0002
 ```
-
-Expand:
-
-```text
-::1
-```
-
-Answer:
 
 ```text
 0000:0000:0000:0000:0000:0000:0000:0001
@@ -913,171 +651,81 @@ Answer:
 
 ---
 
-# 11. Finding the IPv6 Prefix
+## Example — `::1`
 
-The prefix identifies the network portion of the IPv6 address.
+```text
+::1
+```
 
-A common enterprise IPv6 allocation is:
+expands to:
+
+```text
+0000:0000:0000:0000:0000:0000:0000:0001
+```
+
+---
+
+# 10. IPv6 Prefixes
+
+The IPv6 prefix identifies the network portion of an IPv6 address.
+
+Common prefix lengths include:
 
 ```text
 /48
+/56
+/64
 ```
 
-while IPv6 LAN subnets commonly use:
+A common IPv6 LAN uses:
 
 ```text
 /64
 ```
 
-This means an enterprise receiving a `/48` and creating `/64` subnets has:
-
-```text
-64 - 48 = 16 bits
-```
-
-available for creating subnet identifiers.
-
-The remaining:
-
-```text
-64 bits
-```
-
-form the Interface Identifier in a typical `/64` subnet.
-
 ---
 
 ## Example
-
-Consider:
 
 ```text
 2001:DB8:8B00:0001:0000:0000:0000:0001/64
 ```
 
-Conceptually:
+The first 64 bits are the prefix:
 
 ```text
-2001:DB8:8B00 | 0001 | 0000:0000:0000:0001
-      |           |             |
-      |           |             |
- Global Routing  Subnet       Interface
-    Prefix       ID           Identifier
-```
-
-For a `/64`:
-
-```text
-2001:DB8:8B00:0001::
-```
-
-is the prefix.
-
-Written as a network prefix:
-
-```text
-2001:DB8:8B00:1::/64
+2001:DB8:8B00:0001::/64
 ```
 
 ---
 
 ## `/48` Allocation
 
-If an enterprise receives:
+An organisation may receive:
 
 ```text
 2001:DB8:8B00::/48
 ```
 
-and uses:
+and create multiple `/64` subnets:
 
 ```text
-/64
-```
-
-subnets, the fourth hextet can be used to identify different subnets.
-
-For example:
-
-```text
-2001:DB8:8B00:1::/64
-2001:DB8:8B00:2::/64
-2001:DB8:8B00:3::/64
-2001:DB8:8B00:4::/64
+2001:DB8:8B00:0001::/64
+2001:DB8:8B00:0002::/64
+2001:DB8:8B00:0003::/64
+2001:DB8:8B00:0004::/64
 ```
 
 ---
 
-# 12. Finding IPv6 Prefixes with Different Prefix Lengths
-
-The prefix does not always have to be `/64`.
-
-The notes include examples using:
-
-```text
-/56
-/63
-/62
-/71
-/93
-```
-
-The important concept is:
-
-> **The prefix length tells us exactly how many bits belong to the network prefix.**
-
----
-
-## Example — `/56`
-
-Given:
-
-```text
-300D:00F2:0B34:2100:0000:0000:1200:0001/56
-```
-
-The first:
-
-```text
-56 bits
-```
-
-belong to the prefix.
-
-The resulting prefix is:
-
-```text
-300D:F2:B34:2100::/56
-```
-
----
-
-## Example — `/93`
-
-Given:
-
-```text
-2001:DB8:8B00:0001:FB89:2178:0020:2011/93
-```
-
-The prefix contains the first:
-
-```text
-93 bits
-```
-
-The important thing to remember is that prefix lengths do not always end exactly on a 16-bit hextet boundary.
-
----
-
-## Example Prefixes
+## Different Prefix Lengths
 
 The notes include examples such as:
 
 ```text
-FE80::/10
+FE80::/9
 
-2001:DB8:1:B23::/64
+2001:0DB8:1:B23::/64
 
 2001:DB8:BAD:CAFE:1200::/71
 
@@ -1086,103 +734,29 @@ FE80::/10
 2001:DB8:9BAD:BABE::00/63
 ```
 
----
-
-## Prefix Calculation Method
-
-When finding a prefix:
-
-```text
-1. Write the full IPv6 address.
-2. Identify the prefix length.
-3. Count the required number of bits.
-4. Keep the prefix bits.
-5. Set host/interface bits to zero.
-6. Write the result using valid IPv6 notation.
-```
+When the prefix length does not fall exactly on a hextet boundary, count the required number of bits carefully.
 
 ---
 
-# 13. Configuring IPv6 Addresses on a Router
+# 11. Configuring IPv6 on a Cisco Router
 
-IPv6 addresses can be configured manually on Cisco routers.
-
-A router must also be enabled to perform IPv6 routing.
-
----
-
-## Enable IPv6 Routing
-
-Use:
+First enable IPv6 routing globally:
 
 ```text
 R1(config)# ipv6 unicast-routing
 ```
 
-This enables the router to perform IPv6 routing.
-
-Important:
+Then configure an IPv6 address on an interface:
 
 ```text
-R1(config)# ipv6 unicast-routing
-```
-
-is a **global configuration command**.
-
-It is not entered under the interface.
-
----
-
-## Configure an IPv6 Address
-
-Enter the interface:
-
-```text
-R1(config)# interface gigabitEthernet 0/0
-```
-
-Configure an IPv6 address:
-
-```text
-R1(config-if)# ipv6 address 2001:db8:0:1::1/64
-```
-
-Enable the interface:
-
-```text
-R1(config-if)# no shutdown
-```
-
-Example:
-
-```text
-R1(config)# ipv6 unicast-routing
-
 R1(config)# interface g0/0
-
-R1(config-if)# ipv6 address 2001:db8:0:1::1/64
-
+R1(config-if)# ipv6 address 2001:db8:1:1::1/64
 R1(config-if)# no shutdown
 ```
 
 ---
 
-## Example Topology
-
-```text
-                 IPv6 Network
-
-       LAN 1                         LAN 2
-2001:DB8:0:1::/64             2001:DB8:0:2::/64
-       |                              |
-       |                              |
-      G0/0                          G0/1
-       \                              /
-        \                            /
-                 R1
-```
-
-Possible configuration:
+## Example
 
 ```text
 R1(config)# ipv6 unicast-routing
@@ -1190,7 +764,11 @@ R1(config)# ipv6 unicast-routing
 R1(config)# interface g0/0
 R1(config-if)# ipv6 address 2001:db8:0:1::1/64
 R1(config-if)# no shutdown
+```
 
+Another interface:
+
+```text
 R1(config)# interface g0/1
 R1(config-if)# ipv6 address 2001:db8:0:2::1/64
 R1(config-if)# no shutdown
@@ -1198,169 +776,152 @@ R1(config-if)# no shutdown
 
 ---
 
-## Verify IPv6 Addresses
-
-A useful command is:
+## Verify
 
 ```text
 show ipv6 interface
 ```
 
-You can also use:
-
 ```text
 show ipv6 interface brief
 ```
 
-to get a concise view of IPv6-enabled interfaces and addresses.
+```text
+show ipv6 route
+```
 
 ---
 
-# 14. Modified EUI-64
+# 12. Modified EUI-64
 
-EUI-64 is a method used to generate a **64-bit Interface Identifier** from a **48-bit MAC address**.
-
-The document explains why this is necessary:
+Modified EUI-64 is a method for generating a:
 
 ```text
-IPv6 Interface Identifier = 64 bits
+64-bit Interface Identifier
+```
 
-MAC Address = 48 bits
+from a:
+
+```text
+48-bit MAC address
+```
+
+The basic process is:
+
+```text
+48-bit MAC
+     |
+     ↓
+Split MAC
+     |
+     ↓
+Insert FFFE
+     |
+     ↓
+Invert U/L bit
+     |
+     ↓
+64-bit Interface Identifier
+```
+
+---
+
+# 13. Why a 64-bit Interface Identifier
+
+IPv6 commonly uses a 64-bit Interface Identifier in a `/64` subnet.
+
+However, Ethernet MAC addresses are:
+
+```text
+48 bits
 ```
 
 Therefore, a standard method is required to convert:
 
 ```text
 48-bit MAC
-      ↓
-64-bit Interface Identifier
+        ↓
+64-bit IID
 ```
 
-That method is:
-
-> **Modified EUI-64**
-
----
-
-## Why 64-bit IID?
-
-IPv6 commonly uses a:
+That standard is:
 
 ```text
-64-bit Interface Identifier
-```
-
-for a `/64` subnet.
-
-A traditional Ethernet MAC address is:
-
-```text
-48 bits
-```
-
-Therefore:
-
-```text
-48-bit MAC
-     ↓
-Modified EUI-64
-     ↓
-64-bit Interface Identifier
+EUI-64
 ```
 
 ---
 
-## What Does EUI Stand For?
+# 14. What EUI-64 Solves
 
-EUI means:
+One important use of EUI-64 is automatic address generation.
 
-> **Extended Unique Identifier**
-
-Modified EUI-64 is a method of converting a 48-bit MAC address into a 64-bit Interface Identifier.
-
-The Interface Identifier can then form the host/interface portion of an IPv6 address.
-
----
-
-# 15. EUI-64 Examples
-
-The Modified EUI-64 conversion process has three major steps.
-
----
-
-## Step 1 — Divide the MAC Address in Half
-
-Example MAC:
+The notes connect this with:
 
 ```text
-1234:5678:90AB
+SLAAC
 ```
 
-Divide it:
-
-```text
-1234:56 | 78:90AB
-```
-
----
-
-## Step 2 — Insert `FFFE`
-
-Insert:
-
-```text
-FFFE
-```
-
-between the two halves.
-
-```text
-1234:56FF:FE78:90AB
-```
-
----
-
-## Step 3 — Invert the 7th Bit
-
-The first byte is modified by inverting the Universal/Local bit.
+Stateless Address Autoconfiguration allows a device to automatically generate an IPv6 address without requiring manual configuration of the complete address.
 
 Example:
 
 ```text
-MAC
-↓
-EUI-64
-↓
-Invert U/L bit
+Prefix:
+
+2001:db8:abcd:1234::/64
 ```
 
-This produces the final 64-bit Interface Identifier.
-
----
-
-## Complete Process
+MAC:
 
 ```text
-48-bit MAC
+78:2B:CB:AC:08:67
+```
 
-AA:BB:CC:DD:EE:FF
-       |
-       | Split in half
-       ↓
-AA:BB:CC | DD:EE:FF
-       |
-       | Insert FFFE
-       ↓
-AA:BB:CC:FF:FE:DD:EE:FF
-       |
-       | Invert U/L bit
-       ↓
-Modified EUI-64 Interface ID
+Modified EUI-64:
+
+```text
+7A2B:CBFF:FEAC:0867
+```
+
+IPv6 address:
+
+```text
+2001:db8:abcd:1234:7A2B:CBFF:FEAC:0867
+```
+
+Conceptually:
+
+```text
+IPv6 Prefix
+     +
+MAC Address
+     |
+     ↓
+Modified EUI-64
+     |
+     ↓
+IPv6 Interface Identifier
+     |
+     ↓
+IPv6 Address
 ```
 
 ---
 
-## Example From the Notes
+# 15. EUI-64 Conversion
+
+The three main steps are:
+
+```text
+1. Split the MAC address in half.
+2. Insert FFFE.
+3. Invert the U/L bit.
+```
+
+---
+
+## Example
 
 MAC:
 
@@ -1386,19 +947,13 @@ Result:
 78:2B:CB:FF:FE:AC:08:67
 ```
 
-Invert the U/L bit of the first byte:
+Invert the U/L bit:
 
 ```text
 78 → 7A
 ```
 
-Therefore:
-
-```text
-7A:2B:CB:FF:FE:AC:08:67
-```
-
-As IPv6 hextets:
+Final Interface Identifier:
 
 ```text
 7A2B:CBFF:FEAC:0867
@@ -1406,239 +961,146 @@ As IPv6 hextets:
 
 ---
 
-# 16. Configuring IPv6 Addresses with EUI-64
-
-Cisco IOS can automatically generate the Interface Identifier using EUI-64.
-
-The configuration uses:
+## Other EUI-64 Examples from the Notes
 
 ```text
-eui-64
+782B CB FF | FEAC 0867
+        ↓
+7A2B:CBFF:FEAC:0867
 ```
-
-Example:
 
 ```text
-R1(config)# interface g0/0
-
-R1(config-if)# ipv6 address 2001:db8:abcd:1234::/64 eui-64
+0200 4C FF | FE 4F 4F50
 ```
 
-The router uses the interface MAC address to generate the 64-bit Interface Identifier.
+```text
+0050 56FF FEC0 0001
+```
+
+```text
+00FF 6BFF FEA6 F456
+```
+
+```text
+90AB FF6D FE6B 98AE
+```
+
+---
+
+# 16. Why Invert the 7th Bit
+
+The first byte of a MAC address contains the:
+
+```text
+U/L bit
+```
+
+The U/L bit indicates whether the address is:
+
+```text
+Universal
+```
+
+or:
+
+```text
+Locally administered
+```
+
+During Modified EUI-64 conversion, the U/L bit is inverted.
 
 ---
 
 ## Example
 
-Prefix:
+Suppose the first byte is:
 
 ```text
-2001:db8:abcd:1234::/64
+78
 ```
 
-MAC:
+In binary:
 
 ```text
-78:2B:CB:AC:08:67
+01111000
 ```
 
-Modified EUI-64:
+The relevant U/L bit is inverted.
+
+The result becomes:
 
 ```text
-7A2B:CBFF:FEAC:0867
+7A
 ```
 
-Final IPv6 address:
+Therefore:
 
 ```text
-2001:db8:abcd:1234:7A2B:CBFF:FEAC:0867
+78 → 7A
 ```
+
+This bit inversion is an important part of Modified EUI-64.
 
 ---
 
-## Why Use EUI-64?
+# 17. IPv6 Address Types
 
-One reason is automatic address generation.
-
-The notes connect this with:
-
-> **SLAAC — Stateless Address Autoconfiguration**
-
-With EUI-64, a device can generate its Interface Identifier from its MAC address without requiring manual host configuration for the Interface ID.
-
-Conceptually:
+The major IPv6 address types include:
 
 ```text
-IPv6 Prefix
-     +
-MAC Address
-     |
-     ↓
-Modified EUI-64
-     |
-     ↓
-IPv6 Address
+Unicast
+Multicast
+Anycast
 ```
 
----
-
-## EUI-64 Practice Examples
-
-The document contains examples including:
+Important unicast/special addresses include:
 
 ```text
-78:2B:CB:AC:08:67
-```
-
-```text
-00:50:56:C0:00:01
-```
-
-and other MAC addresses.
-
-The process is always:
-
-```text
-1. Split MAC address
-2. Insert FFFE
-3. Invert U/L bit
-4. Use result as 64-bit Interface Identifier
-```
-
----
-
-# 17. Why Is the 7th Bit Inverted?
-
-This is an important EUI-64 concept.
-
-MAC addresses can be divided into two categories:
-
-### UAA — Universally Administered Address
-
-A MAC address assigned to a device by the manufacturer.
-
-### LAA — Locally Administered Address
-
-A MAC address manually assigned or locally configured by an administrator.
-
----
-
-## U/L Bit
-
-The 7th bit of the MAC address is called the:
-
-> **U/L bit — Universal/Local bit**
-
-For the MAC address:
-
-```text
-U/L bit = 0
-```
-
-means:
-
-```text
-Universally Administered Address (UAA)
-```
-
-while:
-
-```text
-U/L bit = 1
-```
-
-means:
-
-```text
-Locally Administered Address (LAA)
-```
-
----
-
-## Modified EUI-64 Reverses the Meaning
-
-When creating a Modified EUI-64 Interface Identifier, the U/L bit is inverted.
-
-Therefore, in the EUI-64 Interface Identifier:
-
-```text
-U/L bit = 0
-```
-
-indicates the original MAC was an:
-
-```text
-LAA
-```
-
-and:
-
-```text
-U/L bit = 1
-```
-
-indicates the original MAC was a:
-
-```text
-UAA
-```
-
----
-
-## Easy Memory
-
-```text
-MAC Address
-
-0 → Universal
-1 → Local
-```
-
-After Modified EUI-64:
-
-```text
-EUI-64
-
-0 → Original MAC was Local
-1 → Original MAC was Universal
+Global Unicast
+Unique Local
+Link-Local
+Loopback
+Unspecified
 ```
 
 ---
 
 # 18. Global Unicast Addresses
 
-Global Unicast IPv6 addresses are public addresses that can be used over the Internet.
+Global Unicast addresses are globally routable IPv6 addresses.
 
-They are intended to be globally unique.
-
-The original Global Unicast range was defined as:
+The range covered in these notes is:
 
 ```text
 2000::/3
 ```
 
-This covers addresses beginning in the range:
+This covers addresses beginning from:
 
 ```text
 2000::
-through
+```
+
+through:
+
+```text
 3FFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF
 ```
 
-The notes also describe Global Unicast addresses as addresses that are not reserved for another purpose.
+Global Unicast addresses can be routed across the Internet.
 
 ---
 
-## Global Unicast Structure
+## Typical Structure
 
-A typical Global Unicast address can be divided into:
+A typical Global Unicast address can be viewed as:
 
 ```text
-48-bit Global Routing Prefix
+Global Routing Prefix
         +
-16-bit Subnet Identifier
+Subnet ID
         +
-64-bit Interface Identifier
+Interface Identifier
 ```
 
 Example:
@@ -1651,406 +1113,173 @@ Conceptually:
 
 ```text
 2001:DB8:8B00 | 0001 | 0000:0000:0000:0001
-      |           |              |
-      |           |              |
- Global Routing  Subnet       Interface
-    Prefix        ID          Identifier
+ Global Prefix   Subnet      Interface ID
 ```
-
----
-
-## Global Routing Prefix
-
-The Global Routing Prefix is assigned by the ISP.
-
----
-
-## Subnet Identifier
-
-The enterprise can use the Subnet Identifier to create different IPv6 subnets.
-
----
-
-## Interface Identifier
-
-The Interface Identifier identifies the interface/host portion of the address.
 
 ---
 
 # 19. Unique Local Addresses
 
-Unique Local IPv6 addresses are private IPv6 addresses.
+Unique Local Addresses are used for internal/private IPv6 networks.
 
-They:
-
-- Cannot be used over the public Internet
-- Do not require registration
-- Can be used freely inside internal networks
-- Are not routed over the Internet
-
----
-
-## Unique Local Address Range
-
-The notes identify:
+The range is:
 
 ```text
 FC00::/7
 ```
 
-However, the standard requires the 8th bit to be set to `1`, meaning practical Unique Local Addresses begin with:
+In practice, Unique Local Addresses commonly begin with:
 
 ```text
 FD
 ```
 
-Therefore, you will commonly see:
-
-```text
-FD00::/8
-```
+They are not intended to be routed across the public Internet.
 
 ---
 
 ## Example
 
 ```text
-FDA5:93AC:8A8F:0001:0000:0000:0000:0001/64
+FD00:1234:5678:1::1/64
 ```
 
-A Unique Local address contains:
-
-```text
-Global ID
-+
-Subnet ID
-+
-Interface ID
-```
-
----
-
-## Unique Local Address Structure
-
-Conceptually:
-
-```text
-7-bit prefix + L bit
-        +
-40-bit Global ID
-        +
-16-bit Subnet ID
-        +
-64-bit Interface ID
-```
-
-The Global ID should be generated in a way that helps avoid address overlap, particularly if organisations later merge.
-
----
-
-## Easy Memory
-
-```text
-Global Unicast
-     ↓
-Public / Internet
-
-Unique Local
-     ↓
-Private / Internal
-```
+These addresses can be freely used inside internal networks without public Internet registration.
 
 ---
 
 # 20. Link-Local Addresses
 
-Link-Local IPv6 addresses are automatically generated on IPv6-enabled interfaces.
+Link-local addresses are used for communication on the local link.
 
-They are used for communication within the local link/subnet.
-
-The address block is:
+The range is:
 
 ```text
 FE80::/10
 ```
 
-The standard requires the bits after the `/10` prefix to be zero for the link-local prefix, so normal link-local addresses begin with:
-
-```text
-FE80
-```
+They are not routed across different IPv6 networks.
 
 ---
 
-## Enable IPv6 on an Interface
+## Automatically Generated
 
-Cisco IOS can automatically generate a link-local address when IPv6 is enabled on an interface.
+A link-local address can automatically be configured when IPv6 is enabled on an interface.
 
-Command:
+For example:
 
 ```text
 R1(config)# interface g0/0
 R1(config-if)# ipv6 enable
 ```
 
-This enables IPv6 on the interface and automatically generates a link-local address.
+The router automatically generates a link-local address.
 
 ---
 
-## Link-Local Addresses Are Not Routed
-
-Link-local addresses are intended for communication on the local link.
-
-Routers do not route packets using a link-local destination across different subnets.
-
-Conceptually:
+## Link-Local Example
 
 ```text
-LAN 1
- |
- | FE80::/10
- |
- R1
- X
- |
- | cannot route link-local destination
- |
-LAN 2
+FE80::EF8:22FF:FE56:A600
 ```
 
 ---
 
-## Common Uses of Link-Local Addresses
+## Link-Local Uses
 
-The notes identify several important uses.
+Link-local addresses are important for:
 
-### Routing Protocol Peerings
+- Neighbor Discovery Protocol
+- SLAAC
+- Router Discovery
+- Routing protocol neighbour relationships
+- Link-local next-hops
 
-For example:
+---
+
+## Link-Local vs Global Unicast
 
 ```text
-OSPFv3
-```
+Link-Local:
 
-can use link-local addresses for neighbour adjacencies.
-
----
-
-### Next-Hop Addresses
-
-Link-local addresses can be used as next-hop addresses for IPv6 static routes.
-
----
-
-### Neighbor Discovery Protocol
-
-IPv6 uses:
-
-> **NDP — Neighbor Discovery Protocol**
-
-NDP replaces the role that ARP performs in IPv4.
-
-Link-local addresses are important to NDP operation.
-
----
-
-## Easy Memory
-
-```text
 FE80::/10
      ↓
-Link-Local
+Local network only
      ↓
-Local link only
+Not routed over Internet
+```
+
+```text
+Global Unicast:
+
+2000::/3
      ↓
-Not routed across subnets
+Globally routable
+     ↓
+Can be used across the Internet
 ```
 
 ---
 
 # 21. Multicast Addresses
 
-IPv6 uses multicast extensively.
+IPv6 does not use broadcast.
 
-The three basic communication models are:
+Instead, IPv6 uses multicast for one-to-many communication.
 
-```text
-Unicast
-Multicast
-Broadcast
-```
-
----
-
-## Unicast
-
-Unicast is:
-
-> One-to-one
-
-```text
-Source
-  |
-  +-----------------> Destination
-```
-
-One source communicates with one destination.
-
----
-
-## Broadcast
-
-Broadcast is:
-
-> One-to-all
-
-```text
-             +---- Host
-             |
-Source ------+---- Host
-             |
-             +---- Host
-```
-
-However:
-
-> **IPv6 does not use broadcast addresses.**
-
-There is no IPv6 broadcast address.
-
----
-
-## Multicast
-
-Multicast is:
-
-> One-to-many
-
-```text
-             +---- Host A
-             |
-Source ------+---- Host B
-             |
-             +---- Host C
-```
-
-Only devices that have joined the specific multicast group receive the multicast traffic.
-
----
-
-## IPv6 Multicast Range
-
-IPv6 multicast addresses use:
-
-```text
-FF00::/8
-```
-
-Therefore, IPv6 multicast addresses begin with:
+IPv6 multicast addresses begin with:
 
 ```text
 FF
 ```
 
----
-
-## Easy Memory
+The multicast range is:
 
 ```text
-Unicast
-1 → 1
+FF00::/8
+```
 
-Broadcast
-1 → All
+---
 
-Multicast
-1 → Many
+## Communication Types
+
+### Unicast
+
+```text
+One → One
+```
+
+### Multicast
+
+```text
+One → Many
+```
+
+### Broadcast
+
+```text
+One → All
 ```
 
 IPv6:
 
 ```text
 No Broadcast
-Use Multicast instead
 ```
+
+Instead:
+
+```text
+Multicast
+```
+
+is used for many one-to-many functions.
 
 ---
 
 # 22. Multicast Address Scopes
 
-IPv6 multicast addresses contain a scope value that indicates how far the multicast traffic can travel.
-
-The important scopes from the notes are:
-
-| Scope | Meaning |
-|---|---|
-| `FF01` | Interface-local / Node-local |
-| `FF02` | Link-local |
-| `FF05` | Site-local |
-| `FF08` | Organization-local |
-| `FF0E` | Global |
-
----
-
-## Interface-Local — `FF01`
-
-The packet does not leave the local device.
-
-It can be used for communication with services within the local device.
-
-```text
-Device
- |
- +-- FF01
-     |
-     +-- Stays inside device
-```
-
----
-
-## Link-Local — `FF02`
-
-The packet remains within the local subnet/link.
-
-Routers do not forward the multicast traffic between subnets.
-
-```text
-LAN
- |
- +-- Host
- +-- Host
- +-- Host
-
-FF02
- ↓
-Local link
-```
-
----
-
-## Site-Local — `FF05`
-
-The packet can be forwarded by routers but should remain within a single physical location.
-
-It should not be forwarded across a WAN.
-
----
-
-## Organization-Local — `FF08`
-
-This has a wider scope than site-local.
-
-It can be used within an entire organisation.
-
----
-
-## Global — `FF0E`
-
-Global scope has no defined local boundary and can potentially be routed over the Internet.
-
----
-
-## Easy Scope Memory
+Important IPv6 multicast scopes include:
 
 ```text
 FF01 → Interface-local
@@ -2062,314 +1291,190 @@ FF0E → Global
 
 ---
 
-# 23. Multicast Groups
+## Interface-Local
 
-IPv6 multicast groups allow hosts and routers to join specific multicast groups.
+```text
+FF01
+```
 
-A device can join a multicast group and receive traffic sent to that group.
+The traffic remains within the local device.
+
+---
+
+## Link-Local
+
+```text
+FF02
+```
+
+The multicast traffic stays on the local link.
+
+Routers do not forward it to another link.
+
+---
+
+## Site-Local
+
+```text
+FF05
+```
+
+The traffic can be forwarded within a site.
+
+---
+
+## Organization-Local
+
+```text
+FF08
+```
+
+The scope can cover an organisation.
+
+---
+
+## Global
+
+```text
+FF0E
+```
+
+Global multicast scope can be routed globally.
+
+---
+
+# 23. IPv6 Multicast Groups
+
+IPv6 devices can join multicast groups.
 
 For example:
 
 ```text
-                 Multicast Group
-                       |
-              +--------+--------+
-              |        |        |
-             R1       R2       R3
-              \        |       /
-               \       |      /
-                Joined Members
+All Nodes
+FF02::1
 ```
 
-The document also illustrates multicast groups joined by a router interface.
-
-Important concepts include:
+and:
 
 ```text
-All Nodes multicast group
-All Routers multicast group
+All Routers
+FF02::2
+```
+
+The notes show routers joining these multicast groups by default.
+
+Conceptually:
+
+```text
+                 Multicast Group
+                       |
+          +------------+------------+
+          |            |            |
+         R1           R2           R3
+          \            |           /
+           \           |          /
+             Members of Group
 ```
 
 ---
 
 ## All Nodes
 
-The IPv6 all-nodes multicast group is:
-
 ```text
 FF02::1
 ```
 
-It represents all IPv6 nodes on the local link.
+Represents all IPv6 nodes on the local link.
 
 ---
 
 ## All Routers
 
-The IPv6 all-routers multicast group is:
-
 ```text
 FF02::2
 ```
 
-It represents all IPv6 routers on the local link.
-
----
-
-## Important
-
-Because IPv6 does not use broadcast:
-
-```text
-IPv6
-   |
-   +-- No broadcast
-   |
-   +-- Uses multicast groups
-```
+Represents all IPv6 routers on the local link.
 
 ---
 
 # 24. Anycast Addresses
 
-Anycast is an IPv6 communication method that can be described as:
-
-> **One-to-one-of-many**
-
-Multiple routers can be configured with the same IPv6 address.
-
-They advertise that address through a routing protocol.
-
-When a host sends traffic to that destination address, routing determines which router is the nearest/most appropriate destination based on the routing metric.
-
----
-
-## Anycast Example
-
-Imagine three routers:
+Anycast is:
 
 ```text
-                 R1
-              10 hops
+One-to-one-of-many
+```
+
+Multiple devices can use the same IPv6 address.
+
+Routing determines which destination is reached.
+
+Example:
+
+```text
+                  R1
+                 /
                 /
-               /
-Host ---------- Destination
-               \
+Host -------- Destination
                 \
-              R2
-              5 hops
-               
-                \
-                 R3
-                12 hops
+                 \
+                  R2
 ```
 
-All three routers use the same IPv6 anycast address:
+R1 and R2 can advertise the same anycast address.
 
-```text
-2001:db8:1::99
-```
-
-The routing system determines the closest/most appropriate router.
-
-If R2 has the best route:
-
-```text
-Host
- |
- | 2001:db8:1::99
- |
- ↓
-R2
-```
-
-The traffic reaches R2.
+The routing table determines which router is the appropriate destination.
 
 ---
 
 ## Important Anycast Point
 
-There is:
+IPv6 does not have a dedicated address range for Anycast.
 
-> **No specific IPv6 address range reserved for Anycast.**
-
-A normal unicast address can be used as an anycast address.
-
-For example:
-
-```text
-Global Unicast
-```
-
-or:
-
-```text
-Unique Local
-```
-
-can be used.
-
-The address is configured as an anycast address on the interface.
+A normal unicast address can be configured as an anycast address.
 
 ---
 
-# 25. Anycast Address Configuration
-
-A Cisco router can configure an IPv6 address as anycast by using:
-
-```text
-anycast
-```
-
-Example:
-
-```text
-R1(config)# interface g0/0
-
-R1(config-if)# ipv6 address 2001:db8:1::99/128 anycast
-```
-
-The important part is:
-
-```text
-ipv6 address
-```
-
-followed by the IPv6 address and:
-
-```text
-anycast
-```
-
----
-
-## Anycast Concept
-
-```text
-          Same IPv6 Address
-          2001:DB8:1::99
-                  |
-        +---------+---------+
-        |         |         |
-       R1        R2        R3
-        |         |         |
-        +---------+---------+
-                  |
-          Routing determines
-          nearest destination
-```
-
----
-
-# 26. Other IPv6 Addresses
-
-There are other special IPv6 addresses that are important to understand.
-
----
+# 25. Other IPv6 Addresses
 
 ## Unspecified Address
-
-The IPv6 unspecified address is:
 
 ```text
 ::
 ```
 
-or:
+Full form:
 
 ```text
 0:0:0:0:0:0:0:0
 ```
 
-It is written as:
+Prefix:
 
 ```text
 ::/128
 ```
 
-It can be used when a device does not yet know its own IPv6 address.
-
-It is similar conceptually to the IPv4 unspecified address:
-
-```text
-0.0.0.0
-```
-
----
-
-## IPv6 Default Route
-
-The IPv6 default route is:
-
-```text
-::/0
-```
-
-This means:
-
-```text
-All IPv6 destinations
-```
-
-unless a more specific route exists.
-
-Conceptually:
-
-```text
-::/0
- |
- +---- Default route
-```
+It represents an unspecified IPv6 address.
 
 ---
 
 ## Loopback Address
 
-The IPv6 loopback address is:
-
 ```text
 ::1
 ```
 
-with prefix length:
-
-```text
-/128
-```
-
-Therefore:
+Prefix:
 
 ```text
 ::1/128
 ```
 
-It is used to test the local protocol stack.
+It is used to test the local IPv6 protocol stack.
 
-Traffic sent to:
-
-```text
-::1
-```
-
-is processed by the local device and is not sent to another device.
-
----
-
-## IPv4 Equivalent
-
-IPv6:
-
-```text
-::1
-```
-
-IPv4:
-
-```text
-127.0.0.0/8
-```
-
-The commonly used IPv4 loopback address is:
+IPv4 equivalent:
 
 ```text
 127.0.0.1
@@ -2377,103 +1482,1209 @@ The commonly used IPv4 loopback address is:
 
 ---
 
-# IPv6 Address Types — Quick Summary
+## IPv6 Default Route
 
 ```text
-IPv6 Address Types
+::/0
+```
 
-                    IPv6
-                      |
-       +--------------+--------------+
-       |              |              |
-    Unicast        Multicast       Anycast
+This represents all IPv6 destinations when a more-specific route is not available.
+
+---
+
+# 26. IPv6 Header vs IPv4 Header
+
+IPv6 has a redesigned base header compared with IPv4.
+
+The IPv6 base header has a fixed size of:
+
+```text
+40 bytes
+```
+
+The IPv4 header can vary in size because IPv4 includes optional header fields.
+
+---
+
+## Important IPv6 Header Fields
+
+The IPv6 base header contains:
+
+```text
+Version
+Traffic Class
+Flow Label
+Payload Length
+Next Header
+Hop Limit
+Source Address
+Destination Address
+```
+
+Conceptually:
+
+```text
++-------------------------------+
+| Version | Traffic Class       |
++-------------------------------+
+|          Flow Label           |
++-------------------------------+
+|       Payload Length          |
++-------------------------------+
+| Next Header | Hop Limit      |
++-------------------------------+
+|                               |
+|       Source Address          |
+|          128 bits             |
+|                               |
++-------------------------------+
+|                               |
+|     Destination Address       |
+|          128 bits             |
+|                               |
++-------------------------------+
+```
+
+---
+
+# 27. IPv6 Header Fields
+
+The IPv6 header contains several important fields that identify how the packet should be processed.
+
+```text
+IPv6 Header
+ |
+ +-- Version
+ +-- Traffic Class
+ +-- Flow Label
+ +-- Payload Length
+ +-- Next Header
+ +-- Hop Limit
+ +-- Source Address
+ +-- Destination Address
+```
+
+---
+
+# 28. Version
+
+The Version field is:
+
+```text
+4 bits
+```
+
+For IPv6, the value is:
+
+```text
+0110
+```
+
+which represents:
+
+```text
+6
+```
+
+Therefore:
+
+```text
+IPv6 Version = 6
+```
+
+IPv4 uses:
+
+```text
+0100
+```
+
+which represents:
+
+```text
+4
+```
+
+---
+
+# 29. Traffic Class
+
+The Traffic Class field is:
+
+```text
+8 bits
+```
+
+It is used for traffic classification and Quality of Service (QoS).
+
+It can help routers identify and treat traffic differently according to its requirements.
+
+Conceptually:
+
+```text
+Traffic Class
+      |
+      +-- Traffic classification
+      |
+      +-- QoS treatment
+```
+
+---
+
+# 30. Flow Label
+
+The Flow Label field is:
+
+```text
+20 bits
+```
+
+It can be used to identify packets belonging to the same traffic flow.
+
+This allows network devices to recognise related packets and apply consistent handling.
+
+Conceptually:
+
+```text
+Flow
+ |
+ +-- Packet 1
+ +-- Packet 2
+ +-- Packet 3
+ +-- Packet 4
+```
+
+The Flow Label can identify the packets as belonging to the same flow.
+
+---
+
+# 31. Payload Length
+
+The Payload Length field is:
+
+```text
+16 bits
+```
+
+It indicates the length of the IPv6 payload.
+
+The payload includes information following the fixed IPv6 base header.
+
+The IPv6 base header itself is:
+
+```text
+40 bytes
+```
+
+---
+
+# 32. Next Header
+
+The Next Header field is:
+
+```text
+8 bits
+```
+
+It identifies what comes after the IPv6 base header.
+
+It can identify:
+
+```text
+Transport-layer protocol
+```
+
+such as:
+
+```text
+TCP
+UDP
+```
+
+or an IPv6 extension header.
+
+Conceptually:
+
+```text
+IPv6 Header
+     |
+     ↓
+Next Header
+     |
+     +-- TCP
+     |
+     +-- UDP
+     |
+     +-- Extension Header
+```
+
+This field replaces the role of the IPv4 Protocol field and also supports IPv6 extension headers.
+
+---
+
+# 33. Hop Limit
+
+The Hop Limit field is:
+
+```text
+8 bits
+```
+
+It prevents IPv6 packets from circulating indefinitely.
+
+Each router that forwards the packet decreases the Hop Limit by:
+
+```text
+1
+```
+
+When the Hop Limit reaches:
+
+```text
+0
+```
+
+the packet is discarded.
+
+This is similar to the IPv4:
+
+```text
+TTL — Time To Live
+```
+
+field.
+
+---
+
+## Example
+
+Suppose:
+
+```text
+Hop Limit = 64
+```
+
+After one router:
+
+```text
+64 → 63
+```
+
+After another router:
+
+```text
+63 → 62
+```
+
+and so on.
+
+---
+
+# 34. Source and Destination Addresses
+
+IPv6 uses:
+
+```text
+128-bit Source Address
+```
+
+and:
+
+```text
+128-bit Destination Address
+```
+
+These are the largest fields in the IPv6 base header.
+
+Example:
+
+```text
+Source:
+
+2001:DB8:1::10
+```
+
+Destination:
+
+```text
+2001:DB8:2::20
+```
+
+The source identifies the sender.
+
+The destination identifies the intended receiver.
+
+---
+
+# 35. Solicited-Node Multicast Address
+
+Solicited-node multicast addresses are an important part of IPv6 Neighbor Discovery.
+
+They are used by:
+
+```text
+NDP
+```
+
+for functions such as address resolution.
+
+The standard solicited-node multicast prefix is:
+
+```text
+FF02::1:FF00:0/104
+```
+
+Every IPv6 unicast address automatically maps to a solicited-node multicast address.
+
+The last:
+
+```text
+24 bits
+```
+
+of the IPv6 unicast address are appended to the solicited-node multicast prefix.
+
+---
+
+## Example
+
+Suppose the IPv6 address ends with:
+
+```text
+...:36:8500
+```
+
+The corresponding solicited-node multicast address can be:
+
+```text
+FF02::1:FF36:8500
+```
+
+Conceptually:
+
+```text
+Solicited-Node Prefix
+        +
+Last 24 bits of IPv6 address
+        |
+        ↓
+Solicited-Node Multicast Address
+```
+
+---
+
+# 36. Solicited-Node Multicast Address CLI
+
+The notes show examples such as:
+
+```text
+FF02::1:FF36:8500
+```
+
+This is a solicited-node multicast address.
+
+The base prefix is:
+
+```text
+FF02::1:FF00:0/104
+```
+
+The final 24 bits are taken from the corresponding IPv6 unicast address.
+
+---
+
+## Why Is This Useful?
+
+Instead of sending a broadcast to every device, IPv6 can send the Neighbor Solicitation to the specific multicast group associated with the target IPv6 address.
+
+This is more efficient than IPv4 ARP broadcast behaviour.
+
+---
+
+# 37. Neighbor Discovery Protocol
+
+Neighbor Discovery Protocol is:
+
+```text
+NDP
+```
+
+It is a major IPv6 protocol used for discovering and communicating with neighbouring devices.
+
+NDP replaces several functions that were traditionally performed by IPv4 ARP.
+
+Important NDP messages include:
+
+```text
+Neighbor Solicitation (NS)
+Neighbor Advertisement (NA)
+Router Solicitation (RS)
+Router Advertisement (RA)
+```
+
+---
+
+## NDP Functions
+
+NDP supports functions such as:
+
+```text
+Neighbor discovery
+Address resolution
+Router discovery
+SLAAC
+Duplicate Address Detection
+```
+
+---
+
+## NDP and ARP
+
+IPv4:
+
+```text
+ARP Request
+      ↓
+Broadcast
+```
+
+IPv6:
+
+```text
+Neighbor Solicitation
+      ↓
+Multicast
+```
+
+Therefore, IPv6 does not use ARP.
+
+---
+
+# 38. Neighbor Solicitation
+
+Neighbor Solicitation is:
+
+```text
+NS
+```
+
+It is used by IPv6 devices to discover information about neighbouring devices.
+
+One important use is discovering the link-layer/MAC address associated with an IPv6 address.
+
+---
+
+## IPv4 Comparison
+
+IPv4 uses:
+
+```text
+ARP Request
+```
+
+which is broadcast.
+
+IPv6 uses:
+
+```text
+Neighbor Solicitation
+```
+
+which is multicast.
+
+Conceptually:
+
+```text
+IPv4:
+
+Host
+ |
+ | ARP Broadcast
+ +--------------------> Network
+                         |
+                         +-- All devices receive it
+
+
+IPv6:
+
+Host
+ |
+ | Neighbor Solicitation
+ | Multicast
+ ↓
+Solicited-Node Group
+ |
+ +-- Relevant device
+```
+
+The multicast approach is more targeted than a broadcast.
+
+---
+
+# 39. Neighbor Advertisement
+
+Neighbor Advertisement is:
+
+```text
+NA
+```
+
+It is used to provide information about a neighbour.
+
+It is commonly compared with the:
+
+```text
+ARP Reply
+```
+
+in IPv4.
+
+Conceptually:
+
+```text
+R1
+ |
+ | Neighbor Solicitation
+ ↓
+R2
+ |
+ | Neighbor Advertisement
+ ↓
+R1
+```
+
+The Neighbor Advertisement provides the information needed by R1 to communicate with R2 at Layer 2.
+
+---
+
+## Simple Comparison
+
+```text
+IPv4
+
+ARP Request
+     ↓
+ARP Reply
+
+
+IPv6
+
+Neighbor Solicitation
+     ↓
+Neighbor Advertisement
+```
+
+---
+
+# 40. IPv6 Neighbor Table
+
+IPv6 does not use an ARP table.
+
+Instead, IPv6 devices maintain an:
+
+```text
+IPv6 Neighbor Table
+```
+
+The table contains information about neighbouring IPv6 devices.
+
+Conceptually:
+
+```text
+IPv6 Device
+     |
+     ↓
+Neighbor Table
+     |
+     +-- IPv6 Address
+     +-- Link-layer information
+     +-- Neighbor state
+```
+
+All IPv6 devices use NDP and maintain neighbour information.
+
+---
+
+# 41. SLAAC
+
+SLAAC stands for:
+
+> **Stateless Address Autoconfiguration**
+
+SLAAC allows an IPv6 host to automatically configure an IPv6 address.
+
+A major part of SLAAC is:
+
+```text
+Router Advertisement
+```
+
+The router provides information about the IPv6 network prefix.
+
+The host can then generate its own address.
+
+---
+
+## Router Discovery
+
+IPv6 uses:
+
+```text
+Router Solicitation (RS)
+```
+
+and:
+
+```text
+Router Advertisement (RA)
+```
+
+messages.
+
+Conceptually:
+
+```text
+Host
+ |
+ | Router Solicitation
+ ↓
+Router
+ |
+ | Router Advertisement
+ ↓
+Host
+ |
+ +-- Learns IPv6 network information
+ |
+ +-- Configures IPv6 address
+```
+
+---
+
+## SLAAC Process
+
+A simplified process is:
+
+```text
+1. Host joins the IPv6 network.
+2. Host uses NDP.
+3. Host discovers router information.
+4. Router sends Router Advertisement.
+5. Host learns the IPv6 prefix.
+6. Host generates an Interface Identifier.
+7. Host creates an IPv6 address.
+8. Host performs Duplicate Address Detection.
+```
+
+---
+
+## Link-Local and Global Address Example
+
+The notes show:
+
+```text
+FE80::EF8:22FF:FE56:A600
+```
+
+and:
+
+```text
+2001:DB8::EF8:22FF:FE56:A600
+```
+
+The first is a:
+
+```text
+Link-Local address
+```
+
+while the second is a:
+
+```text
+Global Unicast address
+```
+
+---
+
+## Link-Local vs Global Unicast
+
+| Feature | Link-Local | Global Unicast |
+|---|---|---|
+| Example | `FE80::...` | `2001:DB8::...` |
+| Scope | Local link | Global |
+| Internet routable | No | Yes |
+| NDP | Yes | Yes |
+| SLAAC | Used | Can be generated |
+| Router discovery | Yes | Yes |
+
+---
+
+# 42. Duplicate Address Detection
+
+Duplicate Address Detection is:
+
+```text
+DAD
+```
+
+It is used to check whether an IPv6 address is already in use before a device begins using it.
+
+---
+
+## DAD Process
+
+A device sends a:
+
+```text
+Neighbor Solicitation
+```
+
+to the solicited-node multicast address associated with the IPv6 address it wants to use.
+
+Conceptually:
+
+```text
+Host wants:
+
+2001:DB8::10
+
+        |
+        ↓
+Calculate solicited-node multicast address
+        |
+        ↓
+Send Neighbor Solicitation
+        |
+        ↓
+Does another device respond?
+       / \
+     Yes  No
+      |    |
+      |    +-- Address appears unique
+      |
+      +-- Duplicate detected
+```
+
+If no response is received, the host assumes the address is unique and can use it.
+
+---
+
+# 43. IPv6 Static Routing
+
+IPv6 supports static routes.
+
+Static routes can be configured manually by a network administrator.
+
+The basic Cisco IOS command is:
+
+```text
+ipv6 route
+```
+
+A static route can specify:
+
+```text
+Destination prefix
+Prefix length
+Next-hop address
+Exit interface
+```
+
+---
+
+## Basic Syntax
+
+```text
+ipv6 route <destination-prefix> <prefix-length> <next-hop>
+```
+
+Example:
+
+```text
+R1(config)# ipv6 route 2001:db8:2::/64 2001:db8:12::2
+```
+
+This tells R1 how to reach:
+
+```text
+2001:DB8:2::/64
+```
+
+using:
+
+```text
+2001:DB8:12::2
+```
+
+as the next-hop.
+
+---
+
+## IPv6 Default Static Route
+
+The IPv6 default route is:
+
+```text
+::/0
+```
+
+Example:
+
+```text
+R1(config)# ipv6 route ::/0 2001:db8:12::2
+```
+
+This means:
+
+```text
+If no more-specific IPv6 route exists,
+send the traffic to the specified next-hop.
+```
+
+---
+
+# 44. Link-Local Next-Hops
+
+IPv6 static routes can use link-local addresses as next-hops.
+
+This is particularly useful when the next-hop router is directly connected.
+
+For example:
+
+```text
+R1
+ |
+ | FE80::2
+ |
+R2
+```
+
+R2's link-local address can be used as the next-hop.
+
+Because link-local addresses are only meaningful on a specific interface/link, Cisco may need the outgoing interface specified as well.
+
+---
+
+## Fully Specified Static Route
+
+A fully specified IPv6 static route identifies:
+
+```text
+Exit interface
++
+Next-hop address
+```
+
+Example:
+
+```text
+R1(config)# ipv6 route 2001:db8:2::/64 g0/1 FE80::2
+```
+
+This tells the router:
+
+```text
+Destination:
+2001:DB8:2::/64
+
+Exit interface:
+G0/1
+
+Next-hop:
+FE80::2
+```
+
+---
+
+## Three Common Static Route Concepts
+
+The notes identify:
+
+```text
+Directly attached
+Recursive
+Fully specified
+```
+
+### Directly Attached
+
+The route specifies an exit interface.
+
+```text
+Destination
+    |
+    ↓
+Exit Interface
+```
+
+### Recursive
+
+The route specifies a next-hop address.
+
+```text
+Destination
+    |
+    ↓
+Next-Hop
+    |
+    ↓
+Router determines exit interface
+```
+
+### Fully Specified
+
+The route specifies both:
+
+```text
+Next-Hop
++
+Exit Interface
+```
+
+Conceptually:
+
+```text
+Fully Specified
+
+Destination
+     |
+     +---- Next-Hop
+     |
+     +---- Exit Interface
+```
+
+---
+
+# IPv6 Routing Example
+
+Consider:
+
+```text
+LAN 1
+2001:DB8:1::/64
+      |
+      |
+     R1
+      |
+      | 2001:DB8:12::/64
+      |
+     R2
+      |
+      |
+LAN 2
+2001:DB8:2::/64
+```
+
+R1 needs a route to:
+
+```text
+2001:DB8:2::/64
+```
+
+A recursive static route could be:
+
+```text
+R1(config)# ipv6 route 2001:db8:2::/64 2001:db8:12::2
+```
+
+If R2 uses a link-local address:
+
+```text
+FE80::2
+```
+
+a fully specified route can be configured:
+
+```text
+R1(config)# ipv6 route 2001:db8:2::/64 g0/1 FE80::2
+```
+
+---
+
+# NDP Message Summary
+
+| Message | Purpose |
+|---|---|
+| NS | Neighbor Solicitation |
+| NA | Neighbor Advertisement |
+| RS | Router Solicitation |
+| RA | Router Advertisement |
+
+---
+
+## Neighbor Solicitation
+
+Used for:
+
+```text
+Neighbor discovery
+Address resolution
+Duplicate Address Detection
+```
+
+---
+
+## Neighbor Advertisement
+
+Used to respond to Neighbor Solicitation and provide neighbour information.
+
+---
+
+## Router Solicitation
+
+A host can send an RS to request router information.
+
+---
+
+## Router Advertisement
+
+A router sends an RA to advertise:
+
+- Router presence
+- IPv6 network information
+- Prefix information
+- Information used by SLAAC
+
+The all-nodes multicast address:
+
+```text
+FF02::1
+```
+
+is used for messages intended for all IPv6 nodes on the local link.
+
+---
+
+# IPv6 Addressing and NDP Relationship
+
+The overall process can be visualised as:
+
+```text
+                   IPv6 Network
+                        |
+                        |
+                    IPv6 Router
+                        |
+                  Router Advertisement
+                        |
+                        ↓
+                     Host
+                        |
+                Learns IPv6 Prefix
+                        |
+                        ↓
+                  Creates Address
+                        |
+                        ↓
+                       DAD
+                        |
+              +---------+---------+
+              |                   |
+        Duplicate?            Unique?
+              |                   |
+             Yes                  No
+              |                   |
+          Address                Use
+          cannot be              address
+          used
+```
+
+---
+
+# IPv6 Neighbor Discovery Overview
+
+```text
+                 NDP
+                  |
+       +----------+----------+
+       |          |          |
+      NS         NA         RS/RA
+       |          |          |
+       |          |          +-- Router Discovery
+       |          |
+       |          +-- Neighbor information
        |
-   +---+---+
-   |   |   |
-  GUA ULA Link-Local
+       +-- Neighbor discovery
+       +-- Address resolution
+       +-- DAD
 ```
 
 ---
 
-## Global Unicast
+# IPv6 Header Quick Reference
+
+| Field | Size | Main Purpose |
+|---|---:|---|
+| Version | 4 bits | Identifies IPv6 |
+| Traffic Class | 8 bits | Traffic/QoS handling |
+| Flow Label | 20 bits | Identifies a traffic flow |
+| Payload Length | 16 bits | Length of payload |
+| Next Header | 8 bits | Next protocol/header |
+| Hop Limit | 8 bits | Limits router hops |
+| Source Address | 128 bits | Sender |
+| Destination Address | 128 bits | Receiver |
+
+IPv6 base header size:
 
 ```text
-Public
-Internet-routable
-2000::/3
+40 bytes
 ```
 
 ---
 
-## Unique Local
+# IPv6 Special Addresses Quick Reference
 
-```text
-Private
-Internal networks
-FC00::/7
-Practical addresses commonly begin with FD
-```
-
----
-
-## Link-Local
-
-```text
-FE80::/10
-Local link only
-Not routed
-Automatically generated when IPv6 is enabled
-```
-
----
-
-## Multicast
-
-```text
-FF00::/8
-One-to-many
-IPv6 does not use broadcast
-```
-
----
-
-## Anycast
-
-```text
-One-to-one-of-many
-Multiple devices use the same address
-Routing selects the nearest/appropriate destination
-```
-
----
-
-## Unspecified
-
-```text
-::/128
-```
-
----
-
-## Loopback
-
-```text
-::1/128
-```
+| Address | Meaning |
+|---|---|
+| `::/128` | Unspecified |
+| `::1/128` | Loopback |
+| `::/0` | Default route |
+| `2000::/3` | Global Unicast |
+| `FC00::/7` | Unique Local |
+| `FE80::/10` | Link-Local |
+| `FF00::/8` | Multicast |
+| `FF02::1` | All Nodes |
+| `FF02::2` | All Routers |
+| `FF02::1:FF00:0/104` | Solicited-node multicast base prefix |
 
 ---
 
 # IPv6 Address Type Cheat Sheet
 
-| Address Type | Prefix / Address | Purpose |
-|---|---|---|
-| Global Unicast | `2000::/3` | Public / Internet |
-| Unique Local | `FC00::/7` | Private / internal |
-| Link-Local | `FE80::/10` | Local link |
-| Multicast | `FF00::/8` | One-to-many |
-| Unspecified | `::/128` | No address yet |
-| Loopback | `::1/128` | Local device testing |
-| Anycast | No dedicated range | One-to-one-of-many |
+```text
+Global Unicast
+2000::/3
+      ↓
+Public / Internet
+
+Unique Local
+FC00::/7
+      ↓
+Private / Internal
+
+Link-Local
+FE80::/10
+      ↓
+Local link only
+
+Multicast
+FF00::/8
+      ↓
+One-to-many
+
+Anycast
+      ↓
+One-to-one-of-many
+
+Unspecified
+::/128
+      ↓
+No specific address
+
+Loopback
+::1/128
+      ↓
+Local device
+```
 
 ---
 
@@ -2485,55 +2696,36 @@ Routing selects the nearest/appropriate destination
 R1(config)# ipv6 unicast-routing
 ```
 
----
-
-## Configure a Normal IPv6 Address
+## Configure IPv6 Address
 
 ```text
 R1(config)# interface g0/0
-
-R1(config-if)# ipv6 address 2001:db8:1:1::1/64
-
+R1(config-if)# ipv6 address 2001:db8:1::1/64
 R1(config-if)# no shutdown
 ```
 
----
-
-## Enable IPv6 and Automatically Generate Link-Local
+## Enable IPv6 Automatically
 
 ```text
 R1(config)# interface g0/0
-
 R1(config-if)# ipv6 enable
 ```
-
-This automatically generates a link-local IPv6 address.
-
----
 
 ## Configure EUI-64
 
 ```text
 R1(config)# interface g0/0
-
-R1(config-if)# ipv6 address 2001:db8:1:1::/64 eui-64
+R1(config-if)# ipv6 address 2001:db8:1::/64 eui-64
 ```
-
----
 
 ## Configure Anycast
 
 ```text
 R1(config)# interface g0/0
-
 R1(config-if)# ipv6 address 2001:db8:1::99/128 anycast
 ```
 
----
-
-# IPv6 Verification Commands
-
-Useful Cisco IOS commands include:
+## Verify IPv6
 
 ```text
 show ipv6 interface
@@ -2547,449 +2739,343 @@ show ipv6 interface brief
 show ipv6 route
 ```
 
-These commands can be used to verify:
+---
+
+# IPv6 Static Route Cheat Sheet
+
+## Recursive Static Route
 
 ```text
-IPv6 addresses
-Interface status
-IPv6 routing information
+R1(config)# ipv6 route 2001:db8:2::/64 2001:db8:12::2
+```
+
+```text
+Destination
+     |
+     ↓
+Next-Hop
+     |
+     ↓
+Router determines exit interface
 ```
 
 ---
 
-# IPv6 Address Shortening — Quick Revision
-
-Remember these two rules:
+## Fully Specified Static Route
 
 ```text
-RULE 1
-Remove leading zeros from each hextet.
+R1(config)# ipv6 route 2001:db8:2::/64 g0/1 FE80::2
 ```
 
-Example:
-
 ```text
-0DB8 → DB8
-```
-
-and:
-
-```text
-RULE 2
-Replace one sequence of consecutive zero hextets with ::
-```
-
-Example:
-
-```text
-2001:DB8:0:0:0:0:1:1
-```
-
-becomes:
-
-```text
-2001:DB8::1:1
-```
-
-Important:
-
-```text
-:: can only be used once.
+Destination
+     |
+     +---- Exit Interface
+     |
+     +---- Next-Hop
 ```
 
 ---
 
-# IPv6 Expansion — Quick Revision
-
-When expanding:
+## Default Static Route
 
 ```text
-1. Add leading zeros.
-2. Expand ::
-3. Make exactly 8 hextets.
-4. Each hextet must contain 4 hexadecimal digits.
-```
-
-Example:
-
-```text
-2001:DB8::1
-```
-
-becomes:
-
-```text
-2001:0DB8:0000:0000:0000:0000:0000:0001
+R1(config)# ipv6 route ::/0 2001:db8:12::2
 ```
 
 ---
 
-# Modified EUI-64 — Quick Revision
+# IPv6 Address Generation Summary
 
-Remember:
+IPv6 addresses can be generated/configured in several ways.
 
 ```text
-48-bit MAC
-     |
-     ↓
-Split MAC in half
-     |
-     ↓
-Insert FFFE
-     |
-     ↓
-Invert U/L bit
-     |
-     ↓
-64-bit Interface Identifier
+                 IPv6 Address
+                      |
+        +-------------+-------------+
+        |             |             |
+      Manual        EUI-64        SLAAC
+        |             |             |
+    Administrator   MAC-based    Router
+    configures      IID           Advertisement
+    address                       |
+                                  ↓
+                              Prefix learned
+                                  |
+                                  ↓
+                              IID generated
+                                  |
+                                  ↓
+                                DAD
 ```
 
-Example:
+---
+
+# Link-Local vs Global Unicast
 
 ```text
+LINK-LOCAL
+
+FE80::/10
+     |
+     +-- Local link
+     +-- NDP
+     +-- SLAAC
+     +-- Router discovery
+     +-- Not Internet-routable
+```
+
+```text
+GLOBAL UNICAST
+
+2000::/3
+     |
+     +-- Globally routable
+     +-- Internet
+     +-- Assigned IPv6 prefix
+```
+
+---
+
+# IPv4 ARP vs IPv6 NDP
+
+| IPv4 | IPv6 |
+|---|---|
+| ARP | NDP |
+| ARP Request | Neighbor Solicitation |
+| ARP Reply | Neighbor Advertisement |
+| Broadcast | Multicast |
+| ARP Table | Neighbor Table |
+| Router discovery mechanisms differ | Router Solicitation / Advertisement |
+
+---
+
+# IPv6 Neighbor Discovery Flow
+
+A simplified neighbour discovery process:
+
+```text
+Host A
+  |
+  | Neighbor Solicitation
+  | Multicast
+  ↓
+Host B
+  |
+  | Neighbor Advertisement
+  ↓
+Host A
+  |
+  +-- Learns neighbour information
+  |
+  +-- Stores information
+      in IPv6 Neighbor Table
+```
+
+---
+
+# SLAAC Flow
+
+```text
+Host
+ |
+ | Router Solicitation
+ ↓
+Router
+ |
+ | Router Advertisement
+ ↓
+Host
+ |
+ +-- Learns IPv6 Prefix
+ |
+ +-- Generates Interface Identifier
+ |
+ +-- Creates IPv6 Address
+ |
+ +-- Performs DAD
+ |
+ ↓
+IPv6 Address Ready
+```
+
+---
+
+# DAD Flow
+
+```text
+Host wants to configure:
+
+2001:DB8::10
+       |
+       ↓
+Generate solicited-node multicast address
+       |
+       ↓
+Send Neighbor Solicitation
+       |
+       ↓
+Any response?
+     /   \
+   Yes    No
+    |      |
+ Duplicate  Address
+ detected   appears unique
+```
+
+---
+
+# IPv6 Multicast Scope Cheat Sheet
+
+```text
+FF01
+ ↓
+Interface-local
+
+FF02
+ ↓
+Link-local
+
+FF05
+ ↓
+Site-local
+
+FF08
+ ↓
+Organization-local
+
+FF0E
+ ↓
+Global
+```
+
+---
+
+# IPv6 EUI-64 Cheat Sheet
+
+```text
+MAC Address
+
 78:2B:CB:AC:08:67
-```
+        |
+        ↓
+Split
 
-Split:
-
-```text
 78:2B:CB | AC:08:67
-```
+        |
+        ↓
+Insert FFFE
 
-Insert FFFE:
-
-```text
 78:2B:CB:FF:FE:AC:08:67
-```
+        |
+        ↓
+Invert U/L bit
 
-Invert U/L bit:
+7A:2B:CB:FF:FE:AC:08:67
+        |
+        ↓
+Group into IPv6 hextets
 
-```text
-78 → 7A
-```
-
-Final IID:
-
-```text
 7A2B:CBFF:FEAC:0867
 ```
 
 ---
 
-# IPv6 Multicast — Quick Revision
+# IPv6 Exam Revision
 
-IPv6 does not use broadcast.
+Before the CCNA exam, I should be able to explain the following without referring to notes.
 
-Instead:
+## Addressing
 
-```text
-IPv6
- ↓
-Multicast
-```
+- [ ] IPv4 uses 32 bits
+- [ ] IPv6 uses 128 bits
+- [ ] IPv6 uses hexadecimal
+- [ ] IPv6 has 8 hextets
+- [ ] Each hextet represents 16 bits
+- [ ] Understand `/64`
+- [ ] Understand `/48`
+- [ ] Understand different IPv6 prefix lengths
 
-Important multicast addresses:
+## Address Representation
 
-```text
-FF02::1
-```
+- [ ] Convert binary to hexadecimal
+- [ ] Convert hexadecimal to binary
+- [ ] Remove leading zeros
+- [ ] Use `::` correctly
+- [ ] Expand `::`
+- [ ] Remember `::` can only be used once
 
-All IPv6 nodes on the local link.
+## Address Types
 
-```text
-FF02::2
-```
+- [ ] Global Unicast
+- [ ] Unique Local
+- [ ] Link-Local
+- [ ] Multicast
+- [ ] Anycast
+- [ ] Loopback
+- [ ] Unspecified
 
-All IPv6 routers on the local link.
+## EUI-64
 
----
+- [ ] Explain why EUI-64 exists
+- [ ] Convert a 48-bit MAC into a 64-bit IID
+- [ ] Insert `FFFE`
+- [ ] Invert the U/L bit
+- [ ] Understand how EUI-64 can be used with SLAAC
 
-# IPv6 Multicast Scopes — Quick Revision
+## Multicast
 
-```text
-FF01 → Interface-local
-FF02 → Link-local
-FF05 → Site-local
-FF08 → Organization-local
-FF0E → Global
-```
+- [ ] Know `FF00::/8`
+- [ ] Know `FF02::1`
+- [ ] Know `FF02::2`
+- [ ] Understand multicast scopes
+- [ ] Understand why IPv6 does not use broadcast
+- [ ] Understand solicited-node multicast
 
----
+## IPv6 Header
 
-# 27. CCNA IPv6 Quiz and Revision
+- [ ] Version
+- [ ] Traffic Class
+- [ ] Flow Label
+- [ ] Payload Length
+- [ ] Next Header
+- [ ] Hop Limit
+- [ ] Source Address
+- [ ] Destination Address
+- [ ] Know that the base IPv6 header is 40 bytes
 
-The original notes contain several CCNA-style questions.
+## NDP
 
-Use the following questions as a revision checklist.
+- [ ] Understand Neighbor Discovery Protocol
+- [ ] Understand Neighbor Solicitation
+- [ ] Understand Neighbor Advertisement
+- [ ] Understand Router Solicitation
+- [ ] Understand Router Advertisement
+- [ ] Understand the IPv6 Neighbor Table
+- [ ] Know that IPv6 does not use ARP
 
----
+## SLAAC
 
-## Question 1 — EUI-64
+- [ ] Know what SLAAC means
+- [ ] Understand Router Advertisement
+- [ ] Understand how a host learns the prefix
+- [ ] Understand Interface Identifier generation
+- [ ] Understand DAD
 
-R1's G0/1 interface has the MAC address:
+## Routing
 
-```text
-60:24:4F:A3:0B:01
-```
-
-What IPv6 address will be generated after configuring:
-
-```text
-R1(config-if)# ipv6 address 2001:db8:0:1::/64 eui-64
-```
-
-### Method
-
-Start with:
-
-```text
-60:24:4F:A3:0B:01
-```
-
-Split:
-
-```text
-60:24:4F | A3:0B:01
-```
-
-Insert:
-
-```text
-FFFE
-```
-
-```text
-60:24:4F:FF:FE:A3:0B:01
-```
-
-Invert the U/L bit.
-
-The first byte:
-
-```text
-60
-```
-
-becomes:
-
-```text
-62
-```
-
-Therefore the Interface Identifier becomes:
-
-```text
-6224:4FFF:FEA3:0B01
-```
-
-Final address:
-
-```text
-2001:DB8:0:1:6224:4FFF:FEA3:0B01
-```
+- [ ] Configure IPv6 static routes
+- [ ] Understand recursive static routes
+- [ ] Understand directly attached static routes
+- [ ] Understand fully specified static routes
+- [ ] Understand link-local next-hops
+- [ ] Know the IPv6 default route `::/0`
 
 ---
 
-# Question 2 — Global ID
+# CCNA-Style Questions
 
-Which portion is the Global ID in a Unique Local IPv6 address such as:
-
-```text
-FD89:3B12:3794:0020:0800:0000:2347:0001/64
-```
-
-Remember the basic ULA structure:
-
-```text
-Prefix
-+
-Global ID
-+
-Subnet ID
-+
-Interface ID
-```
-
-The Global ID is the portion following the ULA prefix and before the Subnet ID.
-
----
-
-# Question 3 — Multicast
-
-R3 sends an IPv6 multicast message to all other routers on the local subnet.
-
-Which destination address represents the all-routers multicast group?
-
-```text
-FF02::2
-```
-
-Remember:
-
-```text
-FF02::1 → All Nodes
-FF02::2 → All Routers
-```
-
----
-
-# Question 4 — IPv6 Broadcast
-
-Does IPv6 have a broadcast address?
-
-```text
-No
-```
-
-IPv6 does not use broadcast.
-
-Instead, IPv6 uses:
-
-```text
-Multicast
-```
-
-for one-to-many communication.
-
----
-
-# Question 5 — Link-Local
-
-Which IPv6 address range is used for link-local addresses?
-
-```text
-FE80::/10
-```
-
-Remember:
-
-```text
-FE80 → Link-Local
-```
-
-Link-local addresses are not routed between subnets.
-
----
-
-# Question 6 — Unique Local
-
-Which address range is associated with Unique Local IPv6 addresses?
-
-```text
-FC00::/7
-```
-
-Practical Unique Local addresses commonly begin with:
-
-```text
-FD
-```
-
-They are used for internal/private networks.
-
----
-
-# Question 7 — Global Unicast
-
-Which range was originally defined for Global Unicast IPv6 addresses?
-
-```text
-2000::/3
-```
-
-These addresses are public and can be used over the Internet.
-
----
-
-# Question 8 — Loopback
-
-What is the IPv6 loopback address?
-
-```text
-::1
-```
-
-Prefix:
-
-```text
-::1/128
-```
-
-IPv4 equivalent:
-
-```text
-127.0.0.1
-```
-
----
-
-# Question 9 — Unspecified Address
-
-What is the IPv6 unspecified address?
-
-```text
-::
-```
-
-Prefix:
-
-```text
-::/128
-```
-
-IPv4 equivalent:
-
-```text
-0.0.0.0
-```
-
----
-
-# Question 10 — Default Route
-
-What is the IPv6 default route?
-
-```text
-::/0
-```
-
-This represents all IPv6 destinations when no more-specific route exists.
-
----
-
-# Question 11 — Enable IPv6 Routing
-
-Which Cisco IOS command enables IPv6 routing?
-
-Correct command:
-
-```text
-R1(config)# ipv6 unicast-routing
-```
-
-Notice that it is entered in:
-
-```text
-Global configuration mode
-```
-
-not interface configuration mode.
-
----
-
-# Question 12 — EUI-64
-
-What are the three main steps of Modified EUI-64?
-
-```text
-1. Split the 48-bit MAC address in half.
-2. Insert FFFE between the halves.
-3. Invert the U/L bit.
-```
-
----
-
-# Question 13 — IPv6 Address Size
+## Question 1
 
 How many bits are in an IPv6 address?
 
@@ -2997,49 +3083,113 @@ How many bits are in an IPv6 address?
 128 bits
 ```
 
-How many bits are in an IPv4 address?
-
-```text
-32 bits
-```
-
 ---
 
-# Question 14 — IPv6 Hextets
+## Question 2
 
-How many hexadecimal groups/hextets are in a full IPv6 address?
+How many hextets are in a full IPv6 address?
 
 ```text
 8
 ```
 
-How many bits are represented by each hextet?
+---
+
+## Question 3
+
+How many bits are represented by one IPv6 hextet?
 
 ```text
 16 bits
 ```
 
-Therefore:
-
-```text
-8 × 16 = 128 bits
-```
-
 ---
 
-# Question 15 — IPv6 Compression
+## Question 4
 
-Can `::` be used more than once in an IPv6 address?
+Can `::` be used twice in one IPv6 address?
 
 ```text
 No
 ```
 
-It can only represent one consecutive sequence of zero hextets.
+It can only be used once.
 
 ---
 
-# Question 16 — IPv6 Multicast
+## Question 5
+
+What is the IPv6 loopback address?
+
+```text
+::1
+```
+
+---
+
+## Question 6
+
+What is the IPv6 unspecified address?
+
+```text
+::
+```
+
+or:
+
+```text
+::/128
+```
+
+---
+
+## Question 7
+
+What is the IPv6 default route?
+
+```text
+::/0
+```
+
+---
+
+## Question 8
+
+What is the Global Unicast range covered in these notes?
+
+```text
+2000::/3
+```
+
+---
+
+## Question 9
+
+What is the Unique Local range?
+
+```text
+FC00::/7
+```
+
+Practical addresses commonly begin with:
+
+```text
+FD
+```
+
+---
+
+## Question 10
+
+What is the Link-Local range?
+
+```text
+FE80::/10
+```
+
+---
+
+## Question 11
 
 What is the IPv6 multicast range?
 
@@ -3049,248 +3199,331 @@ FF00::/8
 
 ---
 
-# Question 17 — Anycast
+## Question 12
 
-What is Anycast?
+What is:
 
 ```text
-One-to-one-of-many
+FF02::1
 ```
 
-Multiple devices can use the same IPv6 address, and routing directs the traffic to the nearest/most appropriate destination.
+?
+
+Answer:
+
+```text
+All IPv6 Nodes
+```
 
 ---
 
-# Question 18 — Anycast Address Range
+## Question 13
 
-Does IPv6 have a dedicated Anycast address range?
+What is:
+
+```text
+FF02::2
+```
+
+?
+
+Answer:
+
+```text
+All IPv6 Routers
+```
+
+---
+
+## Question 14
+
+Does IPv6 use broadcast?
 
 ```text
 No
 ```
 
-A regular unicast address can be configured as an anycast address.
+IPv6 uses multicast for one-to-many communication.
 
-Example:
+---
+
+## Question 15
+
+What protocol replaces ARP in IPv6?
 
 ```text
-R1(config-if)# ipv6 address 2001:db8:1::99/128 anycast
+Neighbor Discovery Protocol (NDP)
 ```
 
 ---
 
-# Final IPv6 Cheat Sheet
+## Question 16
+
+What replaces an ARP Request?
 
 ```text
-IPv6
-|
-+-- Address Size
-|     |
-|     +-- 128 bits
-|
-+-- Hexadecimal
-|     |
-|     +-- Base 16
-|     +-- 0-9
-|     +-- A-F
-|
-+-- Address Structure
-|     |
-|     +-- 8 hextets
-|     +-- 16 bits per hextet
-|
-+-- Shortening
-|     |
-|     +-- Remove leading zeros
-|     +-- :: replaces consecutive zero hextets
-|     +-- :: can only be used once
-|
-+-- Prefix
-|     |
-|     +-- Common LAN prefix = /64
-|     +-- Enterprise allocation commonly = /48
-|
-+-- Address Types
-      |
-      +-- Global Unicast
-      |     2000::/3
-      |
-      +-- Unique Local
-      |     FC00::/7
-      |     Commonly FD...
-      |
-      +-- Link-Local
-      |     FE80::/10
-      |
-      +-- Multicast
-      |     FF00::/8
-      |
-      +-- Anycast
-      |     No dedicated range
-      |
-      +-- Unspecified
-      |     ::/128
-      |
-      +-- Loopback
-            ::1/128
+Neighbor Solicitation (NS)
 ```
 
 ---
 
-# IPv6 Address Types — Memorise This
+## Question 17
+
+What is the IPv6 equivalent of an ARP Reply?
 
 ```text
-2000::/3
-    ↓
-Global Unicast
-    ↓
-Public / Internet
-
-
-FC00::/7
-    ↓
-Unique Local
-    ↓
-Private / Internal
-
-
-FE80::/10
-    ↓
-Link-Local
-    ↓
-Local link only
-
-
-FF00::/8
-    ↓
-Multicast
-    ↓
-One-to-many
-
-
-::
-    ↓
-Unspecified
-
-
-::1
-    ↓
-Loopback
+Neighbor Advertisement (NA)
 ```
 
 ---
 
-# IPv6 Multicast — Memorise This
+## Question 18
+
+What table replaces the IPv4 ARP table?
 
 ```text
-FF01 → Interface-local
-FF02 → Link-local
-FF05 → Site-local
-FF08 → Organization-local
-FF0E → Global
-```
-
-Important groups:
-
-```text
-FF02::1 → All Nodes
-FF02::2 → All Routers
+IPv6 Neighbor Table
 ```
 
 ---
 
-# IPv6 Configuration — Memorise This
+## Question 19
 
-Enable IPv6 routing:
+What does SLAAC stand for?
+
+```text
+Stateless Address Autoconfiguration
+```
+
+---
+
+## Question 20
+
+What messages are associated with router discovery?
+
+```text
+Router Solicitation (RS)
+Router Advertisement (RA)
+```
+
+---
+
+## Question 21
+
+What does DAD stand for?
+
+```text
+Duplicate Address Detection
+```
+
+---
+
+## Question 22
+
+What message is used during DAD?
+
+```text
+Neighbor Solicitation
+```
+
+The message is sent to the appropriate solicited-node multicast address.
+
+---
+
+## Question 23
+
+What is the base solicited-node multicast prefix?
+
+```text
+FF02::1:FF00:0/104
+```
+
+The last 24 bits of the IPv6 unicast address are appended to this prefix.
+
+---
+
+## Question 24
+
+What is the IPv6 base header size?
+
+```text
+40 bytes
+```
+
+---
+
+## Question 25
+
+How large is the IPv6 Version field?
+
+```text
+4 bits
+```
+
+---
+
+## Question 26
+
+How large is the IPv6 Traffic Class field?
+
+```text
+8 bits
+```
+
+---
+
+## Question 27
+
+How large is the Flow Label?
+
+```text
+20 bits
+```
+
+---
+
+## Question 28
+
+How large is the Payload Length field?
+
+```text
+16 bits
+```
+
+---
+
+## Question 29
+
+How large is the Next Header field?
+
+```text
+8 bits
+```
+
+---
+
+## Question 30
+
+How large is the Hop Limit field?
+
+```text
+8 bits
+```
+
+---
+
+## Question 31
+
+What IPv6 header field performs a similar function to IPv4 TTL?
+
+```text
+Hop Limit
+```
+
+---
+
+## Question 32
+
+What command enables IPv6 routing on a Cisco router?
 
 ```text
 R1(config)# ipv6 unicast-routing
 ```
 
-Configure IPv6 manually:
+---
+
+## Question 33
+
+What command automatically enables IPv6 on an interface and generates a link-local address?
 
 ```text
-R1(config)# interface g0/0
-R1(config-if)# ipv6 address 2001:db8:1:1::1/64
-R1(config-if)# no shutdown
-```
-
-Enable IPv6 and automatically generate a link-local address:
-
-```text
-R1(config)# interface g0/0
 R1(config-if)# ipv6 enable
 ```
 
-Use EUI-64:
+---
+
+## Question 34
+
+What keyword is used to configure Modified EUI-64?
 
 ```text
-R1(config)# interface g0/0
-R1(config-if)# ipv6 address 2001:db8:1:1::/64 eui-64
+eui-64
 ```
 
-Configure Anycast:
+Example:
 
 ```text
-R1(config)# interface g0/0
-R1(config-if)# ipv6 address 2001:db8:1::99/128 anycast
-```
-
-Verify:
-
-```text
-show ipv6 interface
-show ipv6 interface brief
-show ipv6 route
+R1(config-if)# ipv6 address 2001:db8:1::/64 eui-64
 ```
 
 ---
 
-# IPv6 vs IPv4 — Key Differences
+## Question 35
 
-| Feature | IPv4 | IPv6 |
-|---|---|---|
-| Address size | 32 bits | 128 bits |
-| Notation | Decimal | Hexadecimal |
-| Broadcast | Yes | No |
-| Multicast | Supported | Heavily used |
-| Address exhaustion | Major limitation | Vast address space |
-| Address discovery | ARP | NDP |
-| Loopback | `127.0.0.1` | `::1` |
-| Unspecified | `0.0.0.0` | `::` |
-| Default route | `0.0.0.0/0` | `::/0` |
-| Link-local | `169.254.0.0/16` | `FE80::/10` |
+What are the steps of Modified EUI-64?
+
+```text
+1. Split the MAC address in half.
+2. Insert FFFE.
+3. Invert the U/L bit.
+```
 
 ---
 
-# Final CCNA IPv6 Memory Map
+## Question 36
+
+What is a recursive IPv6 static route?
+
+A static route where the router is given the:
+
+```text
+Next-hop IPv6 address
+```
+
+and must determine the outgoing interface.
+
+---
+
+## Question 37
+
+What is a fully specified IPv6 static route?
+
+A route specifying:
+
+```text
+Exit interface
++
+Next-hop address
+```
+
+Example:
+
+```text
+ipv6 route 2001:db8:2::/64 g0/1 FE80::2
+```
+
+---
+
+# Important IPv6 Memory Map
 
 ```text
                          IPv6
                           |
         +-----------------+------------------+
         |                 |                  |
-    Addressing        Address Types       Routing
+    Addressing        Address Types       Protocols
         |                 |                  |
-    128 bits         Global Unicast     IPv6 Static
-    8 hextets        Unique Local       Routes
-    Hexadecimal      Link-Local
-                     Multicast
-                     Anycast
-                     Other
-        |
-        +--------------------------+
-        |                          |
-    Shortening                  Prefix
-        |                          |
-    Remove 0s                  /48
-    Use ::                    /56
-    Once only                 /64
-                               etc.
+   128 bits          Global Unicast        NDP
+   8 hextets         Unique Local           |
+   Hexadecimal       Link-Local             +-- NS
+        |             Multicast              +-- NA
+        |             Anycast                +-- RS
+        |             Loopback               +-- RA
+        |             Unspecified
         |
         +--------------------------+
         |
-     EUI-64
+      EUI-64
         |
         +-- Split MAC
         |
@@ -3299,128 +3532,219 @@ show ipv6 route
         +-- Invert U/L bit
         |
         +-- 64-bit IID
+        |
+        +--------------------------+
+        |
+       SLAAC
+        |
+        +-- RS
+        +-- RA
+        +-- Prefix
+        +-- IID
+        +-- DAD
+        |
+        +--------------------------+
+        |
+      Routing
+        |
+        +-- Static Routes
+        +-- Recursive
+        +-- Directly Attached
+        +-- Fully Specified
+        +-- Link-Local Next-Hop
+```
+
+---
+
+# Final IPv6 Cheat Sheet
+
+```text
+IPv6
+    ↓
+128 bits
+    ↓
+8 hextets
+    ↓
+16 bits per hextet
+    ↓
+Hexadecimal
+```
+
+### Shortening
+
+```text
+Remove leading zeros
+        +
+Replace consecutive zero hextets with ::
+        +
+:: only once
+```
+
+### Common Address Types
+
+```text
+2000::/3
+    ↓
+Global Unicast
+
+FC00::/7
+    ↓
+Unique Local
+
+FE80::/10
+    ↓
+Link-Local
+
+FF00::/8
+    ↓
+Multicast
+
+::1/128
+    ↓
+Loopback
+
+::/128
+    ↓
+Unspecified
+
+::/0
+    ↓
+Default Route
+```
+
+### Important Multicast
+
+```text
+FF02::1
+    ↓
+All Nodes
+
+FF02::2
+    ↓
+All Routers
+```
+
+### Solicited-Node Multicast
+
+```text
+FF02::1:FF00:0/104
+    +
+Last 24 bits
+    ↓
+Solicited-Node Multicast Address
+```
+
+### EUI-64
+
+```text
+48-bit MAC
+    ↓
+Split
+    ↓
+Insert FFFE
+    ↓
+Invert U/L bit
+    ↓
+64-bit IID
+```
+
+### NDP
+
+```text
+NDP
+ |
+ +-- NS → Neighbor Solicitation
+ |
+ +-- NA → Neighbor Advertisement
+ |
+ +-- RS → Router Solicitation
+ |
+ +-- RA → Router Advertisement
+```
+
+### SLAAC
+
+```text
+RS
+ ↓
+RA
+ ↓
+Learn Prefix
+ ↓
+Generate IID
+ ↓
+DAD
+ ↓
+IPv6 Address
+```
+
+### Static Routing
+
+```text
+Directly Attached
+        |
+Recursive
+        |
+Fully Specified
+        |
+Link-Local Next-Hop
 ```
 
 ---
 
 # Final CCNA IPv6 Checklist
 
-Before the CCNA exam, make sure you can confidently:
+Before considering IPv6 complete, I should be able to:
 
 - [ ] Explain why IPv6 was introduced
-- [ ] Explain the difference between IPv4 and IPv6 address sizes
+- [ ] Explain 32-bit IPv4 vs 128-bit IPv6
+- [ ] Explain hexadecimal notation
 - [ ] Convert binary to hexadecimal
 - [ ] Convert hexadecimal to binary
-- [ ] Identify the 8 hextets in an IPv6 address
+- [ ] Identify IPv6 hextets
 - [ ] Shorten IPv6 addresses
-- [ ] Expand shortened IPv6 addresses
-- [ ] Explain why `::` can only be used once
+- [ ] Expand IPv6 addresses
+- [ ] Correctly use `::`
 - [ ] Calculate IPv6 prefixes
-- [ ] Understand `/48`, `/56`, `/64` and other prefix lengths
+- [ ] Understand `/48`
+- [ ] Understand `/56`
+- [ ] Understand `/64`
 - [ ] Configure IPv6 addresses on Cisco routers
-- [ ] Enable IPv6 routing with `ipv6 unicast-routing`
-- [ ] Configure IPv6 using EUI-64
-- [ ] Perform Modified EUI-64 conversion
-- [ ] Explain why the U/L bit is inverted
+- [ ] Enable `ipv6 unicast-routing`
+- [ ] Configure link-local addressing
+- [ ] Configure EUI-64
+- [ ] Calculate Modified EUI-64
+- [ ] Explain the U/L bit
 - [ ] Identify Global Unicast addresses
 - [ ] Identify Unique Local addresses
 - [ ] Identify Link-Local addresses
-- [ ] Explain why IPv6 does not use broadcast
-- [ ] Identify IPv6 multicast addresses
-- [ ] Understand multicast scopes
-- [ ] Remember `FF02::1` — All Nodes
-- [ ] Remember `FF02::2` — All Routers
-- [ ] Explain Anycast
-- [ ] Configure an Anycast address
-- [ ] Identify `::/128` — Unspecified
-- [ ] Identify `::1/128` — Loopback
-- [ ] Identify `::/0` — IPv6 Default Route
-- [ ] Verify IPv6 configuration using Cisco IOS commands
-
----
-
-# Final IPv6 Exam Memory
-
-```text
-IPv6 = 128 bits
-
-8 Hextets
-↓
-Each Hextet = 16 bits
-
-Hexadecimal
-↓
-0-9 + A-F
-
-Shortening
-↓
-Remove leading zeros
-↓
-Use :: for consecutive zero hextets
-↓
-:: only once
-
-Common /64
-↓
-64-bit Prefix
-+
-64-bit Interface ID
-
-Modified EUI-64
-↓
-48-bit MAC
-↓
-Split
-↓
-Insert FFFE
-↓
-Invert U/L bit
-↓
-64-bit IID
-
-Global Unicast
-↓
-2000::/3
-
-Unique Local
-↓
-FC00::/7
-↓
-Commonly FD...
-
-Link-Local
-↓
-FE80::/10
-
-Multicast
-↓
-FF00::/8
-
-All Nodes
-↓
-FF02::1
-
-All Routers
-↓
-FF02::2
-
-Unspecified
-↓
-::/128
-
-Loopback
-↓
-::1/128
-
-Default Route
-↓
-::/0
-
-IPv6 Routing
-↓
-ipv6 unicast-routing
-```
+- [ ] Identify Multicast addresses
+- [ ] Identify Anycast
+- [ ] Identify Loopback
+- [ ] Identify Unspecified address
+- [ ] Identify the IPv6 default route
+- [ ] Understand the 40-byte IPv6 header
+- [ ] Explain every IPv6 header field
+- [ ] Understand Next Header
+- [ ] Understand Hop Limit
+- [ ] Understand solicited-node multicast
+- [ ] Understand NDP
+- [ ] Explain Neighbor Solicitation
+- [ ] Explain Neighbor Advertisement
+- [ ] Explain Router Solicitation
+- [ ] Explain Router Advertisement
+- [ ] Understand the IPv6 Neighbor Table
+- [ ] Explain SLAAC
+- [ ] Explain DAD
+- [ ] Configure IPv6 static routes
+- [ ] Understand recursive static routes
+- [ ] Understand directly attached static routes
+- [ ] Understand fully specified static routes
+- [ ] Understand link-local next-hops
+- [ ] Troubleshoot basic IPv6 connectivity
 
 ---
 
 # End of IPv6 Notes
+
+This README documents my CCNA IPv6 study material, including IPv6 addressing, address representation, EUI-64, IPv6 address types, multicast, the IPv6 header, Neighbor Discovery Protocol, SLAAC, DAD, and IPv6 static routing.
